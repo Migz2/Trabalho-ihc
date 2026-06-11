@@ -1,25 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/constants/hive_keys.dart';
 import '../../core/services/hive_service.dart';
+import '../../features/focus/presentation/pages/focus_page.dart';
+import '../../features/onboarding/presentation/pages/onboarding_page.dart';
 import '../widgets/home_shell.dart';
 import 'app_routes.dart';
 
-// Placeholder pages for each tab
-class FocusPage extends StatelessWidget {
-  const FocusPage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Foco')),
-      body: const Center(
-        child: Text('Página de Foco'),
-      ),
-    );
-  }
-}
-
+// Placeholder pages for remaining tabs
 class PetPage extends StatelessWidget {
   const PetPage({Key? key}) : super(key: key);
 
@@ -62,48 +49,12 @@ class SettingsPage extends StatelessWidget {
   }
 }
 
-class OnboardingPage extends StatelessWidget {
-  const OnboardingPage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Onboarding')),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('Bem-vindo ao Honey!'),
-            const SizedBox(height: 32),
-            ElevatedButton(
-              onPressed: () {
-                // Mark onboarding as completed
-                HiveService.put(
-                  boxName: HiveKeys.onboardingBox,
-                  key: HiveKeys.onboardingCompletedKey,
-                  value: true,
-                );
-                context.go(AppRoutes.focus);
-              },
-              child: const Text('Iniciar'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 /// Configure GoRouter for Honey app
 final appRouter = GoRouter(
   initialLocation: AppRoutes.root,
   redirect: (context, state) {
-    // Check if onboarding is completed
-    final onboardingCompleted = HiveService.get(
-      boxName: HiveKeys.onboardingBox,
-      key: HiveKeys.onboardingCompletedKey,
-      defaultValue: false,
-    ) as bool;
+    // Check if onboarding is completed using the helper method
+    final onboardingCompleted = HiveService.isOnboardingCompleted();
 
     // Redirect to onboarding if not completed
     if (!onboardingCompleted && state.uri.path != AppRoutes.onboarding) {
