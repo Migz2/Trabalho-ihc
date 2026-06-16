@@ -7,7 +7,9 @@ class HiveKeys {
   static const String shopBox = 'shopBox';
   static const String settingsBox = 'settingsBox';
   static const String statisticsBox = 'statisticsBox';
+  static const String achievementsBox = 'achievementsBox';
   static const String onboardingBox = 'onboardingBox';
+  static const String settingsBoxKey = 'settings';
 
   // User keys
   static const String userIdKey = 'userId';
