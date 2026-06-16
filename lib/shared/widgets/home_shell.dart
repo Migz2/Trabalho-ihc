@@ -35,8 +35,9 @@ class _HomeShellState extends State<HomeShell> {
     final location = GoRouterState.of(context).uri.path;
     if (location.startsWith(AppRoutes.focus)) return 0;
     if (location.startsWith(AppRoutes.pet)) return 1;
-    if (location.startsWith(AppRoutes.history)) return 2;
-    if (location.startsWith(AppRoutes.settings)) return 3;
+    if (location.startsWith(AppRoutes.shop)) return 2;
+    if (location.startsWith(AppRoutes.history)) return 3;
+    if (location.startsWith(AppRoutes.settings)) return 4;
     return 0;
   }
 
@@ -53,9 +54,12 @@ class _HomeShellState extends State<HomeShell> {
         context.go(AppRoutes.pet);
         break;
       case 2:
-        context.go(AppRoutes.history);
+        context.go(AppRoutes.shop);
         break;
       case 3:
+        context.go(AppRoutes.history);
+        break;
+      case 4:
         context.go(AppRoutes.settings);
         break;
     }
@@ -104,15 +108,21 @@ class _HomeShellState extends State<HomeShell> {
               theme: theme,
             ),
             _buildNavItem(
+              icon: Icons.shopping_cart_rounded,
+              label: 'Loja',
+              isSelected: _selectedIndex == 2,
+              theme: theme,
+            ),
+            _buildNavItem(
               icon: Icons.history_rounded,
               label: 'Histórico',
-              isSelected: _selectedIndex == 2,
+              isSelected: _selectedIndex == 3,
               theme: theme,
             ),
             _buildNavItem(
               icon: Icons.settings_rounded,
               label: 'Ajustes',
-              isSelected: _selectedIndex == 3,
+              isSelected: _selectedIndex == 4,
               theme: theme,
             ),
           ],

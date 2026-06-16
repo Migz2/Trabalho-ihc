@@ -35,7 +35,9 @@ class HiveKeys {
   static const String petEquippedItemsKey = 'petEquippedItems';
   static const String petLastPetTimeKey = 'petLastPetTime'; // cooldown for petting
 
-  // Session keys
+  // Shop keys
+  static const String shopItemsListKey = 'shopItemsList'; // List<ShopItemModel>
+  static const String shopCatalogInitializedKey = 'shopCatalogInitialized';
   static const String sessionsListKey = 'sessionsList';
   static const String todaySessionsKey = 'todaySessions';
   static const String weekSessionsKey = 'weekSessions';

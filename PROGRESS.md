@@ -1,6 +1,95 @@
 # Honey App — Progress Report
 
-## Current Status: Phase 2 — Virtual Pet System ✅ COMPLETE
+## Current Status: Phase 3 — Shop System (In Progress)
+
+---
+
+## Phase 3 Deliverables (In Progress)
+
+### 1. **Shop Domain Layer** ✅
+Complete shop entities with enums for category and rarity.
+
+**Entities Created:**
+- `shop_item_enums.dart`: ItemCategory enum (accessory, background, toy, decoration), ItemRarity enum (common, rare, epic)
+- `shop_item_entity.dart`: ShopItemEntity with all 13 fields (id, name, description, emoji, category, rarity, price, happinessMultiplier, coinMultiplier, decayReduction, owned, equipped, backgroundColorHex)
+- `purchase_result_entity.dart`: PurchaseResultEntity and BonusResult for results
+
+### 2. **Hive Models & Adapters** ✅
+Complete persistence models with type adapters.
+
+**Models Created:**
+- `shop_item_model.dart`: ShopItemModel with @HiveType(typeId: 5) and all fields serialized
+- `shop_item_adapters.dart`: ItemCategoryAdapter (typeId: 6) and ItemRarityAdapter (typeId: 7)
+- `shop_item_model.g.dart`: Generated adapter for ShopItemModel
+- Updated `hive_keys.dart`: Added shopItemsListKey and shopCatalogInitializedKey
+
+### 3. **Shop Catalog Datasource** ✅
+Initial catalog with 7 hardcoded items.
+
+**Catalog Items:**
+1. Coroninha (👑) - accessory, rare, 80 🍯, happiness x1.30
+2. Óculos (🕶️) - accessory, common, 60 🍯, happiness x1.15
+3. Gravatinha (🎀) - accessory, common, 45 🍯, happiness x1.10
+4. Caminha (🛏️) - toy, rare, 120 🍯, happiness x1.20, decay -0.15
+5. Caixinha de música (🎵) - toy, rare, 90 🍯, happiness x1.25, coins x1.15
+6. Floresta (🌲) - background, epic, 150 🍯, happiness x1.20, decay -0.10, color #C8E6C9
+7. Pôr do sol (🌅) - background, epic, 180 🍯, happiness x1.30, coins x1.10, color #FFE0B2
+
+### 4. **Shop Repository** ✅
+Hive-backed persistence with automatic catalog initialization.
+
+**Implementation:**
+- `shop_repository.dart`: Abstract interface with 6 methods
+- `shop_repository_impl.dart`: Hive-backed implementation with automatic catalog population on first run
+- Methods: getAllItems(), getItem(), saveItem(), saveAllItems(), getOwnedItems(), getEquippedItems()
+
+### 5. **Shop UseCases** ✅
+Complete business logic for purchasing and equipment.
+
+**UseCases:**
+- `purchase_item_usecase.dart`: Validates ownership, coin sufficiency, marks as owned
+- `equip_item_usecase.dart`: Category-based equipment limits (accessory: max 1, background: max 1, toy: max 2, decoration: max 2)
+- `calculate_bonuses_usecase.dart`: Calculates total multipliers (coins capped at 3.0, decay reduction capped at 0.50)
+
+### 6. **Shop Provider (State Management)** ✅
+AsyncNotifier managing shop state and purchase/equip actions.
+
+**Implementation:**
+- `shop_provider.dart`: AsyncNotifier<List<ShopItemEntity>> with purchase() and equip() methods
+- Integration with UserProvider for coin deduction
+- Getters: ownedItems, equippedItems, currentBonuses
+
+### 7. **Shop Widgets** ✅
+UI components for item display and purchase dialog.
+
+**Widgets Created:**
+- `shop_item_card.dart`: 96px card with emoji, name, bonuses, lock/checkmark/price
+- `purchase_dialog.dart`: BottomSheet with item details, bonus chips, purchase button
+
+### 8. **Shop Page** ✅
+Complete shop interface with catalog grid and bonus display.
+
+**Features:**
+- Dynamic GridView.builder showing all 7 items
+- Bonus section showing equipped items effects
+- Integration with ShopProvider for purchase/equip functionality
+
+### 9. **Navigation Integration** ✅
+Added shop to bottom navigation and app router.
+
+**Changes:**
+- Updated `app_router.dart`: Added ShopPage import and route
+- Updated `home_shell.dart`: Added shop icon (shopping_cart_rounded) to bottom navigation (index 2)
+- Shop route accessible from all tabs
+
+### 10. **PetPage UI Integration** ✅
+Updated pet page with dynamic shop preview.
+
+**Changes:**
+- Updated `pet_page.dart`: Integrated ShopProvider for dynamic item display
+- Shop preview shows actual owned items count (X/7)
+- Added "Ver loja completa →" button linking to shop
+- Replaced static items grid with ShopItemCard components
 
 ---
 

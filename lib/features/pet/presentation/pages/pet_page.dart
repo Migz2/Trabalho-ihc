@@ -10,6 +10,8 @@ import 'package:honey/features/pet/presentation/providers/pet_provider.dart';
 import 'package:honey/features/pet/presentation/widgets/action_button.dart';
 import 'package:honey/features/pet/presentation/widgets/attribute_bar.dart';
 import 'package:honey/features/pet/presentation/widgets/pet_display_widget.dart';
+import 'package:honey/features/shop/presentation/providers/shop_provider.dart';
+import 'package:honey/features/shop/presentation/widgets/shop_item_card.dart';
 import 'package:honey/shared/widgets/coin_display.dart';
 
 class PetPage extends ConsumerWidget {
@@ -19,6 +21,7 @@ class PetPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final petAsync = ref.watch(petProvider);
     final userAsync = ref.watch(userProvider);
+    final shopAsync = ref.watch(shopProvider);
     final isDark = context.isDark;
 
     return petAsync.when(
@@ -194,65 +197,107 @@ class PetPage extends ConsumerWidget {
                 ),
                 const SizedBox(height: AppSpacing.lg),
 
-                // Shop section (preview)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Lojinha',
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      const SizedBox(height: AppSpacing.sm),
-                      Text(
-                        'Equipe para aumentar ganhos de felicidade',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
-                            ),
-                      ),
-                      const SizedBox(height: AppSpacing.sm),
-                      Text(
-                        '0/7',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                      ),
-                      const SizedBox(height: AppSpacing.lg),
-
-                      // Shop items grid
-                      GridView.count(
-                        crossAxisCount: 3,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        mainAxisSpacing: AppSpacing.md,
-                        crossAxisSpacing: AppSpacing.md,
+                // Shop section (preview with dynamic items)
+                shopAsync.when(
+                  data: (items) {
+                    final ownedCount = items.where((item) => item.owned).length;
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildShopItem(context, '👑', 'Coroninha', '+30%', '🍯80'),
-                          _buildShopItem(context, '🕶️', 'Óculos', '+15%', '🍯60'),
-                          _buildShopItem(context, '🎀', 'Gravatinha', '+10%', '🍯45'),
-                          _buildShopItem(context, '🛏️', 'Caminha', '+20%', '🍯120'),
-                          _buildShopItem(context, '🎵', 'Caixinha', '+25%', '🍯90'),
-                          _buildShopItem(context, '🌲', 'Floresta', '+20%', '🍯150'),
-                          _buildShopItem(context, '🌅', 'Pôr do sol', '+30%', '🍯180'),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Lojinha',
+                                    style: Theme.of(context).textTheme.titleLarge,
+                                  ),
+                                  const SizedBox(height: AppSpacing.sm),
+                                  Text(
+                                    'Equipe para aumentar ganhos de felicidade',
+                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme.onSurfaceVariant,
+                                        ),
+                                  ),
+                                ],
+                              ),
+                              Text(
+                                '$ownedCount/${items.length}',
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      color: Theme.of(context).colorScheme.primary,
+                                    ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: AppSpacing.lg),
+
+                          // Shop items grid
+                          GridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                              crossAxisSpacing: AppSpacing.md,
+                              mainAxisSpacing: AppSpacing.md,
+                              childAspectRatio: 0.85,
+                            ),
+                            itemCount: items.length,
+                            itemBuilder: (context, index) {
+                              final item = items[index];
+                              return ShopItemCard(
+                                item: item,
+                                onTap: () {
+                                  context.go('/shop');
+                                },
+                              );
+                            },
+                          ),
+                          const SizedBox(height: AppSpacing.lg),
+
+                          // View full shop button
+                          Center(
+                            child: TextButton(
+                              onPressed: () => context.go('/shop'),
+                              child: Text(
+                                'Ver loja completa →',
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      color: Theme.of(context).colorScheme.primary,
+                                    ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: AppSpacing.lg),
+
+                          // Back to focus button
+                          Center(
+                            child: TextButton(
+                              onPressed: () => context.go('/focus'),
+                              child: Text(
+                                '← Voltar ao foco',
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      color: Theme.of(context).colorScheme.primary,
+                                    ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: AppSpacing.xl),
                         ],
                       ),
-                      const SizedBox(height: AppSpacing.lg),
-
-                      // Back to focus button
-                      Center(
-                        child: TextButton(
-                          onPressed: () => context.go('/focus'),
-                          child: Text(
-                            '← Voltar ao foco',
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: AppSpacing.xl),
-                    ],
+                    );
+                  },
+                  loading: () => Padding(
+                    padding: const EdgeInsets.all(AppSpacing.lg),
+                    child: const Center(child: CircularProgressIndicator()),
+                  ),
+                  error: (error, stack) => Padding(
+                    padding: const EdgeInsets.all(AppSpacing.lg),
+                    child: Center(child: Text('Erro ao carregar loja: $error')),
                   ),
                 ),
               ],
@@ -271,60 +316,6 @@ class PetPage extends ConsumerWidget {
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
       body: SafeArea(child: child),
-    );
-  }
-
-  Widget _buildShopItem(
-    BuildContext context,
-    String emoji,
-    String name,
-    String bonus,
-    String price,
-  ) {
-    final isDark = context.isDark;
-
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceVariant,
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-      ),
-      padding: const EdgeInsets.all(AppSpacing.md),
-      child: Stack(
-        alignment: Alignment.topRight,
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(emoji, style: const TextStyle(fontSize: 24)),
-              const SizedBox(height: AppSpacing.sm),
-              Text(
-                name,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                bonus,
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-              ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.all(4),
-            child: Icon(
-              Icons.lock,
-              size: 12,
-              color: Theme.of(context).colorScheme.outline,
-            ),
-          ),
-        ],
-      ),
     );
   }
 

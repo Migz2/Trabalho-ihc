@@ -4,6 +4,7 @@ import '../../core/services/hive_service.dart';
 import '../../features/focus/presentation/pages/focus_page.dart';
 import '../../features/onboarding/presentation/pages/onboarding_page.dart';
 import '../../features/pet/presentation/pages/pet_page.dart';
+import '../../features/shop/presentation/pages/shop_page.dart';
 import '../widgets/home_shell.dart';
 import 'app_routes.dart';
 
@@ -78,9 +79,9 @@ final appRouter = GoRouter(
           builder: (context, state) => const PetPage(),
         ),
         GoRoute(
-          path: AppRoutes.history,
-          name: 'history',
-          builder: (context, state) => const HistoryPage(),
+          path: AppRoutes.shop,
+          name: 'shop',
+          builder: (context, state) => const ShopPage(),
         ),
         GoRoute(
           path: AppRoutes.settings,
