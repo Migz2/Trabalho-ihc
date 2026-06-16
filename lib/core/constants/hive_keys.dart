@@ -20,15 +20,20 @@ class HiveKeys {
   static const String lastSessionDateKey = 'lastSessionDate';
 
   // Pet keys
+  static const String petKey = 'pet'; // stores the PetModel object
+  static const String petIdKey = 'petId';
   static const String petNameKey = 'petName';
-  static const String petTypeKey = 'petType';
   static const String petHungerKey = 'petHunger';
   static const String petHygieneKey = 'petHygiene';
   static const String petHappinessKey = 'petHappiness';
+  static const String petEnergyKey = 'petEnergy';
   static const String petLevelKey = 'petLevel';
-  static const String petAgeKey = 'petAge';
-  static const String petSkinKey = 'petSkin';
-  static const String petAccessoriesKey = 'petAccessories';
+  static const String petExperienceKey = 'petExperience';
+  static const String petMoodKey = 'petMood';
+  static const String petLastInteractionKey = 'petLastInteraction';
+  static const String petLastDecayCheckKey = 'petLastDecayCheck';
+  static const String petEquippedItemsKey = 'petEquippedItems';
+  static const String petLastPetTimeKey = 'petLastPetTime'; // cooldown for petting
 
   // Session keys
   static const String sessionsListKey = 'sessionsList';

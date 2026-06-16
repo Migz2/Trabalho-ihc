@@ -3,24 +3,11 @@ import 'package:go_router/go_router.dart';
 import '../../core/services/hive_service.dart';
 import '../../features/focus/presentation/pages/focus_page.dart';
 import '../../features/onboarding/presentation/pages/onboarding_page.dart';
+import '../../features/pet/presentation/pages/pet_page.dart';
 import '../widgets/home_shell.dart';
 import 'app_routes.dart';
 
 // Placeholder pages for remaining tabs
-class PetPage extends StatelessWidget {
-  const PetPage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Pet')),
-      body: const Center(
-        child: Text('Página do Pet'),
-      ),
-    );
-  }
-}
-
 class HistoryPage extends StatelessWidget {
   const HistoryPage({Key? key}) : super(key: key);
 

@@ -1,24 +1,10 @@
-# Honey App — Phase 1 Progress Report
+# Honey App — Progress Report
 
-## Overview
-Successfully completed foundational setup for **Honey**, an Android productivity app featuring a Pomodoro timer and virtual pet system. The codebase is now ready for feature implementation starting in Phase 2.
-
----
-
-## Status: ✅ COMPLETE
-
-All 6 deliverables completed successfully without compilation errors.
-
-**Verification:**
-- ✅ `flutter pub get` runs without conflicts
-- ✅ `flutter analyze` shows no errors
-- ✅ Navigation system functional (4-tab bottom bar)
-- ✅ Design system fully implemented (colors, typography, spacing, radius)
-- ✅ Dark mode togglable and responsive to system brightness
+## Current Status: Phase 2 — Virtual Pet System ✅ COMPLETE
 
 ---
 
-## Deliverable Summary
+## Phase 2 Deliverables (Complete)
 
 ### 1. **pubspec.yaml** ✅
 Complete dependency specification with version management.
@@ -371,17 +357,217 @@ flutter pub outdated
 
 ---
 
-## Next Steps (Phase 2)
+## Phase 2 — Virtual Pet System ✅ COMPLETE
 
-1. **Focus Feature:** Implement timer mechanics, session persistence
-2. **Pet System:** Design entity models, implement stats & care logic
-3. **Shop Feature:** Build item catalog, purchase system, inventory
-4. **Statistics:** Create chart views, session history
+### Overview
+Implemented complete virtual pet system including decay mechanics, interactive actions, mood system, and UI.
+
+### Status: ✅ COMPLETE
+
+**Verification:**
+- ✅ Pet entity with mood computation
+- ✅ Decay service with hourly decay rates
+- ✅ All action usecases (feed, bathe, pet, focus reward)
+- ✅ Repository with Hive persistence
+- ✅ AsyncNotifier provider with decay timer
+- ✅ PetDisplayWidget with animations
+- ✅ Complete PetPage with attribute bars and action buttons
+- ✅ Integration with TimerProvider for focus rewards
+- ✅ Shop preview section (visual only)
+
+### Architecture & Implementation
+
+#### Hive Type IDs (Cumulative)
+- TypeId 0-3: Phase 1 (User, TimerState, FocusSession, Onboarding)
+- TypeId 4: PetModel (new)
+- TypeId 5: PetMoodAdapter (new)
+
+#### Domain Layer (`features/pet/domain/`)
+
+**Entities:**
+- `PetEntity` — Main pet data with computed mood property
+- `PetMood` enum — 6 mood states (ecstatic, happy, content, neutral, sad, neglected)
+- `PetActionResultEntity` — Result of pet actions with success/message/deltas
+
+**Repositories:**
+- `PetRepository` — Abstract interface
+- `PetRepositoryImpl` — Hive-backed implementation
+
+**UseCases:**
+- `FeedPetUseCase` — Cost 10🍯, hunger +35, happiness +10
+- `BathePetUseCase` — Cost 15🍯, hygiene +50, happiness +5
+- `PetPetUseCase` — Cost 5🍯, happiness +20, 30s cooldown
+- `ApplyFocusRewardUseCase` — Called on timer complete, happiness +15, energy +10, xp +20, level up at 100 xp
+
+#### Data Layer (`features/pet/data/`)
+
+**Models:**
+- `PetModel` — @HiveType(typeId: 4), all fields @HiveField annotated
+- `PetMoodAdapter` — TypeAdapter for enum serialization
+- `pet_model.g.dart` — Generated adapter code
+
+**Persistence:**
+- Registered in HiveService with adapters
+- Stored in `petBox` with key `HiveKeys.petKey`
+
+#### Presentation Layer (`features/pet/presentation/`)
+
+**Widgets:**
+- `PetDisplayWidget` — Idle float animation, happy scale animation, mood-based image selection, speech bubble with mood text
+- `ActionButton` — Reusable button with emoji icon, label, cost
+- `AttributeBar` — Animated progress bar with label and percentage
+
+**Provider:**
+- `petProvider` — AsyncNotifier<PetEntity>
+  - Loads or creates pet on build
+  - Applies decay on startup
+  - Starts 60s periodic decay timer
+  - Provides `feed()`, `bathe()`, `giveLove()`, `applyFocusReward()` methods
+  - Updates user coins on successful actions
+
+**Pages:**
+- `PetPage` — Full page with:
+  - Header with pet name, mood, coin display
+  - Pet display card with level info
+  - Attribute bars (hunger, hygiene, happiness) with animated LinearProgressIndicator
+  - 3 action buttons (feed, bathe, pet) with costs
+  - Shop preview with 7 locked items (visual only)
+  - Back to focus button
+  - SnackBar feedback for actions
+
+#### Services
+
+**PetDecayService** (`core/services/`)
+- Hourly decay rates:
+  - Hunger: -8.0/h (decreases quickly)
+  - Hygiene: -2.0/h (decreases slowly)
+  - Happiness: -3.0/h
+  - Energy: -1.5/h
+- Special conditions:
+  - If hungry (< 30): happiness decays 2x faster
+  - If neglected: hygiene decays 1.5x faster
+- Methods: `applyDecay()`, `needsDecayCheck()`
+
+#### Integration Points
+
+**TimerProvider** (`features/focus/presentation/providers/`)
+- When focus session completes (TimerPhase.focus):
+  - Adds coins to user (12 + cycle bonus)
+  - Calls `ref.read(petProvider.notifier).applyFocusReward()`
+  - Pet gains happiness, energy, experience
+  - Level up celebrated via snackbar if xp >= 100
+
+**UserProvider Integration**
+- PetNotifier calls `ref.read(userProvider.notifier).spendCoins()` on action
+- UserProvider provides coins for action validation
+
+#### Assets Structure
+
+```
+assets/images/pet/
+  mel_happy.png      (moods: happy, content, neutral)
+  mel_ecstatic.png   (mood: ecstatic)
+  mel_sleeping.png   (moods: sad, neglected)
+```
+
+Mapped in `pet_assets.dart` via `getAssetForMood(PetMood)`
+
+### What's Ready for Phase 3+
+
+✅ **Pet System Complete:**
+- Full decay mechanics working
+- All action usecases implemented
+- Mood system reactive and visual
+- Integration with timer functional
+- Persistence working across app restarts
+
+✅ **No implementation needed for:**
+- Pet animation mechanics (configured)
+- Decay calculations (automated every 60s)
+- Coin transactions (integrated with UserProvider)
+- Focus reward application (automatic on timer complete)
+
+⚠️ **Phase 3+ scope (NOT implemented):**
+1. Shop feature (items, purchases, inventory)
+2. Equipment system (bonuses from items)
+3. Statistics feature (charts, session history)
+4. Settings feature (user preferences, notifications)
+5. Onboarding flow (user/pet setup)
+6. Pet names customization (currently hardcoded "Mel")
+7. Additional pet visual states
+
+### Verification Checklist
+
+- [x] PetEntity with computed mood property
+- [x] PetDecayService hourly rates working
+- [x] All 4 usecases implemented with validation
+- [x] Repository with getOrCreatePet() default values
+- [x] PetNotifier with AsyncNotifier pattern
+- [x] 60s periodic decay timer running
+- [x] PetDisplayWidget with animations
+- [x] PetPage UI matches prototypes
+- [x] Action buttons deduct coins & update pet
+- [x] Attribute bars animated with clamp logic
+- [x] Mood affects image selection and speech
+- [x] TimerProvider integration working
+- [x] Focus reward applied on timer complete
+- [x] SnackBar feedback on actions
+- [x] Hive persistence tested (reopen = decay applied)
+- [x] Shop preview visual only (no functionality)
+
+### File Statistics (Phase 2)
+
+**New files created:** 16
+- Entities: 3 (pet_entity, pet_mood_enum, pet_action_result)
+- Models: 2 (pet_model, pet_mood_adapter) + 1 generated
+- Repository: 2 (abstract + impl)
+- UseCases: 4 (feed, bathe, pet, focus_reward)
+- Services: 1 (pet_decay_service)
+- Provider: 1 (pet_provider)
+- Widgets: 3 (pet_display, action_button, attribute_bar)
+- Pages: 1 (pet_page)
+
+**Files modified:** 3
+- HiveKeys (added pet keys)
+- HiveService (registered adapters)
+- TimerProvider (integrated focus reward)
+- AppRouter (imported real PetPage)
+
+**Total lines of code:** ~1,800 (Phase 2 only)
+
+### Next Steps (Phase 3)
+
+1. **Focus Feature:** UI improvements, session history in database
+2. **Statistics:** Charts implementation, session analytics
+3. **Shop Feature:** Item catalog, purchase system, inventory management
+4. **Equipment System:** Item bonuses, equipment swapping
 5. **Settings:** User preferences, theme toggle, notifications
-6. **Onboarding:** Initial user/pet setup flow
+6. **Onboarding:** User profile setup, pet customization
 
 ---
 
-**Phase 1 Completed:** June 11, 2026  
-**Status:** Ready for Feature Development  
-**Scope:** Closed (Foundation Only)
+**Phase 2 Completed:** June 16, 2026  
+**Status:** Ready for Statistics Implementation  
+**Scope:** Closed (Pet System Only)
+
+---
+
+## Phase 1 — Foundation Setup ✅ COMPLETE
+
+### Overview
+Successfully completed foundational setup for **Honey**, an Android productivity app featuring a Pomodoro timer and virtual pet system.
+
+**Verification:**
+- ✅ `flutter pub get` runs without conflicts
+- ✅ `flutter analyze` shows no errors
+- ✅ Navigation system functional (4-tab bottom bar)
+- ✅ Design system fully implemented (colors, typography, spacing, radius)
+- ✅ Dark mode togglable and responsive to system brightness
+
+### Deliverable Summary
+
+1. **pubspec.yaml** ✅ — Complete dependency specification
+
+2. **Folder Structure** ✅ — Clean architecture + feature-driven design
+
+3. **Design System** ✅ — Colors, typography, spacing, radius
