@@ -17,7 +17,7 @@ migrate_working_dir/
 .idea/
 
 # The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be tracked by version control
+# VS Code which you may wish to be checked into version control
 .vscode/
 
 # Flutter/Dart/Pub related
@@ -43,41 +43,42 @@ app.*.map.json
 **/ios/**/*.moved-aside
 **/ios/**/*.pbxuser
 **/ios/**/*.perspectivev3
-**/ios/**/*sync/
-**/ios/**/.sconsign.dblite
-**/ios/**/.tags*
-**/ios/**/.vagrant/
-**/ios/**/DerivedData/
-**/ios/**/Icon?
-**/ios/**/Pods/
-**/ios/**/.symlinks/
+**/ios/**/*.xcconfig
+**/ios/**/*.xcworkspace
 **/ios/**/Flutter/Flutter.framework
 **/ios/**/Flutter/Flutter.podspec
-**/ios/**/Flutter/Generated.xcconfig
-**/ios/**/Flutter/ephemeral/
+**/ios/**/Flutter/GeneratedPluginRegistrant.swift
+**/ios/**/GeneratedPluginRegistrant.swift
+**/ios/**/Flutter/ephemeralmodules
 **/ios/**/Flutter/app.flx
 **/ios/**/Flutter/app.zip
 **/ios/**/Flutter/flutter_assets/
 **/ios/**/Flutter/flutter_export_environment.sh
 **/ios/**/ServiceDefinitions.json
 **/ios/**/Runner/GeneratedPluginRegistrant.*
+**/ios/**/XCServiceDefinitions.json
 
-# Exceptions to above rules
-!/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
-
-# Android
+# Android/Gradle
+**/android/**/gradlew
+**/android/**/gradlew.bat
+**/android/**/gradle-wrapper.jar
+**/android/**/gradle-wrapper.properties
+**/android/**/gradle.properties
+**/android/**/local.properties
+**/android/**/signing/debug.keystore
+**/android/key.properties
+**/android/.gradle/
+**/android/captures/
+**/android/gradlew
+**/android/gradlew.bat
+**/android/local.properties
+**/android/**/GeneratedPluginRegistrant.java
 **/android/app/debug
 **/android/app/profile
 **/android/app/release
-**/android/app/*.jks
-**/android/app/*.keystore
 
 # Coverage
 coverage/
 
-# Exceptions
-!/coverage/badges/**
-!/coverage/badges/*.svg
-
-# Checks
-.checks-cache/
+# Exceptions to above rules.
+!/packages/flutter_tools/test/flutter_tools_test_utils.dart

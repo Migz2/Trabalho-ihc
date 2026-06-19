@@ -1,45 +1,79 @@
-/// Centralized Hive storage keys for the Honey App
+/// Centralized Hive box keys for Honey app
 class HiveKeys {
-  HiveKeys._();
-
   // Box names
-  static const String userPreferencesBox = 'user_preferences';
-  static const String petDataBox = 'pet_data';
-  static const String focusSessionsBox = 'focus_sessions';
-  static const String shopItemsBox = 'shop_items';
-  static const String statisticsBox = 'statistics';
+  static const String userBox = 'userBox';
+  static const String petBox = 'petBox';
+  static const String sessionBox = 'sessionBox';
+  static const String shopBox = 'shopBox';
+  static const String settingsBox = 'settingsBox';
+  static const String statisticsBox = 'statisticsBox';
+  static const String achievementsBox = 'achievementsBox';
+  static const String onboardingBox = 'onboardingBox';
+  static const String settingsBoxKey = 'settings';
 
-  // User Preferences Keys
-  static const String onboardingCompleteKey = 'onboarding_complete';
-  static const String userNameKey = 'user_name';
-  static const String darkModeKey = 'dark_mode';
-  static const String focusDurationKey = 'focus_duration';
-  static const String shortBreakDurationKey = 'short_break_duration';
-  static const String longBreakDurationKey = 'long_break_duration';
-  static const String appBlockingIntensityKey = 'app_blocking_intensity';
-  static const String notificationsMutedKey = 'notifications_muted';
-  static const String ambientSoundKey = 'ambient_sound';
+  // User keys
+  static const String userIdKey = 'userId';
+  static const String userNameKey = 'userName';
+  static const String userAvatarKey = 'userAvatar';
+  static const String totalCoinsKey = 'totalCoins';
+  static const String totalXpKey = 'totalXp';
+  static const String levelKey = 'level';
+  static const String streakDaysKey = 'streakDays';
+  static const String lastSessionDateKey = 'lastSessionDate';
 
-  // Pet Data Keys
-  static const String petNameKey = 'pet_name';
-  static const String petTypeKey = 'pet_type';
-  static const String petLevelKey = 'pet_level';
-  static const String petExperienceKey = 'pet_experience';
-  static const String petHungerKey = 'pet_hunger';
-  static const String petHygieneKey = 'pet_hygiene';
-  static const String petHappinessKey = 'pet_happiness';
-  static const String petLastFedKey = 'pet_last_fed';
-  static const String petLastBathedKey = 'pet_last_bathed';
-  static const String petLastPlayedKey = 'pet_last_played';
+  // Pet keys
+  static const String petKey = 'pet'; // stores the PetModel object
+  static const String petIdKey = 'petId';
+  static const String petNameKey = 'petName';
+  static const String petHungerKey = 'petHunger';
+  static const String petHygieneKey = 'petHygiene';
+  static const String petHappinessKey = 'petHappiness';
+  static const String petEnergyKey = 'petEnergy';
+  static const String petLevelKey = 'petLevel';
+  static const String petExperienceKey = 'petExperience';
+  static const String petMoodKey = 'petMood';
+  static const String petLastInteractionKey = 'petLastInteraction';
+  static const String petLastDecayCheckKey = 'petLastDecayCheck';
+  static const String petEquippedItemsKey = 'petEquippedItems';
+  static const String petLastPetTimeKey = 'petLastPetTime'; // cooldown for petting
 
-  // Coins & Shop Keys
-  static const String coinsBalanceKey = 'coins_balance';
-  static const String unlockedItemsKey = 'unlocked_items';
+  // Shop keys
+  static const String shopItemsListKey = 'shopItemsList'; // List<ShopItemModel>
+  static const String shopCatalogInitializedKey = 'shopCatalogInitialized';
+  static const String sessionsListKey = 'sessionsList';
+  static const String todaySessionsKey = 'todaySessions';
+  static const String weekSessionsKey = 'weekSessions';
+  static const String monthSessionsKey = 'monthSessions';
 
-  // Statistics Keys
-  static const String totalSessionsKey = 'total_sessions';
-  static const String totalFocusTimeKey = 'total_focus_time';
-  static const String currentStreakKey = 'current_streak';
-  static const String longestStreakKey = 'longest_streak';
-  static const String weeklyStatsKey = 'weekly_stats';
+  // Shop keys
+  static const String ownedItemsKey = 'ownedItems';
+  static const String purchaseHistoryKey = 'purchaseHistory';
+  static const String favoriteItemsKey = 'favoriteItems';
+
+  // Settings keys
+  static const String themeModeKey = 'themeMode'; // 'light', 'dark', 'system'
+  static const String enableNotificationsKey = 'enableNotifications';
+  static const String enableSoundKey = 'enableSound';
+  static const String enableVibrationKey = 'enableVibration';
+  static const String languageKey = 'language'; // 'pt', 'en'
+  static const String focusSessionDurationKey = 'focusSessionDuration';
+  static const String shortBreakDurationKey = 'shortBreakDuration';
+  static const String longBreakDurationKey = 'longBreakDuration';
+
+  // Statistics keys
+  static const String totalSessionsKey = 'totalSessions';
+  static const String totalFocusTimeKey = 'totalFocusTime';
+  static const String bestStreakKey = 'bestStreak';
+  static const String averageSessionKey = 'averageSession';
+  static const String dailyStatsKey = 'dailyStats'; // Map<date, sessions>
+  static const String weeklyStatsKey = 'weeklyStats';
+  static const String monthlyStatsKey = 'monthlyStats';
+
+  // Onboarding keys
+  static const String onboardingCompletedKey = 'onboardingCompleted';
+  static const String firstLaunchKey = 'firstLaunch';
+  static const String tutorialSeenKey = 'tutorialSeen';
+
+  // Empty constructor to prevent instantiation
+  HiveKeys._();
 }

@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/extensions/context_extensions.dart';
 import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_spacing.dart';
 import '../navigation/app_routes.dart';
 
-/// Home shell with bottom navigation bar
-/// Wraps all main app screens (Focus, Pet, History, Settings)
+/// Shell widget with bottom navigation bar for Honey app
 class HomeShell extends StatefulWidget {
   final Widget child;
 
@@ -20,134 +17,132 @@ class HomeShell extends StatefulWidget {
 }
 
 class _HomeShellState extends State<HomeShell> {
-  late String _selectedRoute;
+  late int _selectedIndex;
 
   @override
   void initState() {
     super.initState();
-    _selectedRoute = AppRoutes.focus;
+    _selectedIndex = _getSelectedIndex();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _updateSelectedRoute();
+    _selectedIndex = _getSelectedIndex();
   }
 
-  void _updateSelectedRoute() {
+  int _getSelectedIndex() {
     final location = GoRouterState.of(context).uri.path;
-    if (location == AppRoutes.focus) {
-      _selectedRoute = AppRoutes.focus;
-    } else if (location == AppRoutes.pet) {
-      _selectedRoute = AppRoutes.pet;
-    } else if (location == AppRoutes.history) {
-      _selectedRoute = AppRoutes.history;
-    } else if (location == AppRoutes.settings) {
-      _selectedRoute = AppRoutes.settings;
-    }
+    if (location.startsWith(AppRoutes.focus)) return 0;
+    if (location.startsWith(AppRoutes.pet)) return 1;
+    if (location.startsWith(AppRoutes.shop)) return 2;
+    if (location.startsWith(AppRoutes.history)) return 3;
+    if (location.startsWith(AppRoutes.settings)) return 4;
+    return 0;
   }
 
-  void _navigateTo(String route) {
+  void _onNavigationTapped(int index) {
     setState(() {
-      _selectedRoute = route;
+      _selectedIndex = index;
     });
-    context.go(route);
+
+    switch (index) {
+      case 0:
+        context.go(AppRoutes.focus);
+        break;
+      case 1:
+        context.go(AppRoutes.pet);
+        break;
+      case 2:
+        context.go(AppRoutes.shop);
+        break;
+      case 3:
+        context.go(AppRoutes.history);
+        break;
+      case 4:
+        context.go(AppRoutes.settings);
+        break;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: widget.child,
-      bottomNavigationBar: _buildBottomNavBar(context),
-    );
-  }
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
 
-  Widget _buildBottomNavBar(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: context.isDarkMode ? AppColors.darkSurface : AppColors.lightSurface,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _buildNavItem(
-                icon: Icons.timer_outlined,
-                activeIcon: Icons.timer,
-                label: 'Foco',
-                route: AppRoutes.focus,
-                context: context,
-              ),
-              _buildNavItem(
-                icon: Icons.pets_outlined,
-                activeIcon: Icons.pets,
-                label: 'Pet',
-                route: AppRoutes.pet,
-                context: context,
-              ),
-              _buildNavItem(
-                icon: Icons.bar_chart_outlined,
-                activeIcon: Icons.bar_chart,
-                label: 'Histórico',
-                route: AppRoutes.history,
-                context: context,
-              ),
-              _buildNavItem(
-                icon: Icons.settings_outlined,
-                activeIcon: Icons.settings,
-                label: 'Ajustes',
-                route: AppRoutes.settings,
-                context: context,
-              ),
-            ],
-          ),
+    return Scaffold(
+      backgroundColor: isDarkMode ? AppColors.darkBackground : AppColors.lightBackground,
+      body: widget.child,
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: isDarkMode ? AppColors.darkSurface : AppColors.lightSurface,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.1),
+              blurRadius: 8,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: BottomNavigationBar(
+          currentIndex: _selectedIndex,
+          onTap: _onNavigationTapped,
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: isDarkMode ? AppColors.darkSurface : AppColors.lightSurface,
+          selectedItemColor: isDarkMode ? AppColors.darkPrimary : AppColors.lightPrimary,
+          unselectedItemColor: isDarkMode ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+          selectedLabelStyle: Theme.of(context).textTheme.labelSmall,
+          unselectedLabelStyle: Theme.of(context).textTheme.labelSmall,
+          elevation: 0,
+          items: [
+            _buildNavItem(
+              icon: Icons.schedule_rounded,
+              label: 'Foco',
+              isSelected: _selectedIndex == 0,
+              theme: theme,
+            ),
+            _buildNavItem(
+              icon: Icons.pets_rounded,
+              label: 'Pet',
+              isSelected: _selectedIndex == 1,
+              theme: theme,
+            ),
+            _buildNavItem(
+              icon: Icons.shopping_cart_rounded,
+              label: 'Loja',
+              isSelected: _selectedIndex == 2,
+              theme: theme,
+            ),
+            _buildNavItem(
+              icon: Icons.history_rounded,
+              label: 'Histórico',
+              isSelected: _selectedIndex == 3,
+              theme: theme,
+            ),
+            _buildNavItem(
+              icon: Icons.settings_rounded,
+              label: 'Ajustes',
+              isSelected: _selectedIndex == 4,
+              theme: theme,
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildNavItem({
+  BottomNavigationBarItem _buildNavItem({
     required IconData icon,
-    required IconData activeIcon,
     required String label,
-    required String route,
-    required BuildContext context,
+    required bool isSelected,
+    required ThemeData theme,
   }) {
-    final isActive = _selectedRoute == route;
-    final color = isActive
-        ? context.primaryColor
-        : context.textSecondaryColor;
-
-    return GestureDetector(
-      onTap: () => _navigateTo(route),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            isActive ? activeIcon : icon,
-            color: color,
-            size: 28,
-          ),
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            label,
-            style: TextStyle(
-              color: color,
-              fontSize: 12,
-              fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
+    return BottomNavigationBarItem(
+      icon: isSelected
+          ? Icon(icon, size: 28)
+          : Icon(icon, size: 24),
+      activeIcon: Icon(icon, size: 28),
+      label: label,
     );
   }
 }

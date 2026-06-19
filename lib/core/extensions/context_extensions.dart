@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_typography.dart';
 
-/// Context extensions for easy access to theme and screen utilities
-extension ContextExtension on BuildContext {
-  // ─────────────────────────────────────────────
-  // SCREEN SIZE UTILITIES
-  // ─────────────────────────────────────────────
+/// Extensions for BuildContext
+extension ContextExtensions on BuildContext {
+  /// Get current theme data
+  ThemeData get theme => Theme.of(this);
+
+  /// Get current color scheme
+  ColorScheme get colorScheme => theme.colorScheme;
+
+  /// Get current text theme
+  TextTheme get textTheme => theme.textTheme;
+
+  /// Get device size
+  Size get screenSize => MediaQuery.of(this).size;
 
   /// Get screen width
   double get screenWidth => MediaQuery.of(this).size.width;
@@ -14,158 +20,90 @@ extension ContextExtension on BuildContext {
   /// Get screen height
   double get screenHeight => MediaQuery.of(this).size.height;
 
-  /// Get screen size
-  Size get screenSize => MediaQuery.of(this).size;
+  /// Get device padding (safe area)
+  EdgeInsets get devicePadding => MediaQuery.of(this).padding;
 
-  /// Check if screen is in portrait mode
-  bool get isPortrait => MediaQuery.of(this).orientation == Orientation.portrait;
-
-  /// Check if screen is in landscape mode
+  /// Check if device is in landscape mode
   bool get isLandscape =>
       MediaQuery.of(this).orientation == Orientation.landscape;
 
-  /// Check if screen is mobile (less than 600dp width)
-  bool get isMobile => screenWidth < 600;
+  /// Check if device is in portrait mode
+  bool get isPortrait =>
+      MediaQuery.of(this).orientation == Orientation.portrait;
 
-  /// Check if screen is tablet (600dp to 900dp)
-  bool get isTablet => screenWidth >= 600 && screenWidth < 900;
+  /// Check if device is small (phone)
+  bool get isSmallDevice => screenWidth < 600;
 
-  /// Check if screen is desktop (900dp or more)
-  bool get isDesktop => screenWidth >= 900;
+  /// Check if device is medium (tablet)
+  bool get isMediumDevice => screenWidth >= 600 && screenWidth < 900;
 
-  /// Get horizontal padding based on screen size
-  double get horizontalPadding => isMobile ? 16 : 24;
-
-  /// Get bottom padding (for keyboard offset)
-  double get bottomPadding => MediaQuery.of(this).viewInsets.bottom;
-
-  // ─────────────────────────────────────────────
-  // THEME UTILITIES
-  // ─────────────────────────────────────────────
-
-  /// Get current theme data
-  ThemeData get theme => Theme.of(this);
-
-  /// Check if dark mode is enabled
-  bool get isDarkMode => theme.brightness == Brightness.dark;
+  /// Check if device is large (tablet)
+  bool get isLargeDevice => screenWidth >= 900;
 
   /// Get brightness
-  Brightness get brightness => theme.brightness;
+  Brightness get brightness => MediaQuery.of(this).platformBrightness;
 
-  /// Get color scheme
-  ColorScheme get colorScheme => theme.colorScheme;
+  /// Check if dark mode is enabled
+  bool get isDarkMode => brightness == Brightness.dark;
 
-  /// Get primary color
-  Color get primaryColor => colorScheme.primary;
+  /// Check if light mode is enabled
+  bool get isLightMode => brightness == Brightness.light;
 
-  /// Get secondary color
-  Color get secondaryColor => colorScheme.secondary;
-
-  /// Get error color
-  Color get errorColor => colorScheme.error;
-
-  /// Get surface color
-  Color get surfaceColor => colorScheme.surface;
-
-  // ─────────────────────────────────────────────
-  // HONEY APP THEME COLORS
-  // ─────────────────────────────────────────────
-
-  /// Get appropriate background color based on theme
-  Color get backgroundColor => isDarkMode
-      ? AppColors.darkBackground
-      : AppColors.lightBackground;
-
-  /// Get appropriate text primary color
-  Color get textPrimaryColor =>
-      isDarkMode ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-
-  /// Get appropriate text secondary color
-  Color get textSecondaryColor =>
-      isDarkMode ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
-
-  /// Get appropriate divider color
-  Color get dividerColor =>
-      isDarkMode ? AppColors.darkDivider : AppColors.lightDivider;
-
-  /// Get appropriate hunger bar color
-  Color get hungerBarColor =>
-      isDarkMode ? AppColors.darkHungerBar : AppColors.lightHungerBar;
-
-  /// Get appropriate hygiene bar color
-  Color get hygieneBarColor =>
-      isDarkMode ? AppColors.darkHygieneBar : AppColors.lightHygieneBar;
-
-  /// Get appropriate happiness bar color
-  Color get happinessBarColor =>
-      isDarkMode ? AppColors.darkHappinessBar : AppColors.lightHappinessBar;
-
-  // ─────────────────────────────────────────────
-  // TEXT STYLE UTILITIES
-  // ─────────────────────────────────────────────
-
-  /// Get display large text style
-  TextStyle get textDisplayLarge => AppTypography.displayLarge(this);
-
-  /// Get headline large text style
-  TextStyle get textHeadlineLarge => AppTypography.headlineLarge(this);
-
-  /// Get headline medium text style
-  TextStyle get textHeadlineMedium => AppTypography.headlineMedium(this);
-
-  /// Get title large text style
-  TextStyle get textTitleLarge => AppTypography.titleLarge(this);
-
-  /// Get title medium text style
-  TextStyle get textTitleMedium => AppTypography.titleMedium(this);
-
-  /// Get body large text style
-  TextStyle get textBodyLarge => AppTypography.bodyLarge(this);
-
-  /// Get body medium text style
-  TextStyle get textBodyMedium => AppTypography.bodyMedium(this);
-
-  /// Get label large text style
-  TextStyle get textLabelLarge => AppTypography.labelLarge(this);
-
-  /// Get label small text style
-  TextStyle get textLabelSmall => AppTypography.labelSmall(this);
-
-  // ─────────────────────────────────────────────
-  // NAVIGATION & DIALOGS
-  // ─────────────────────────────────────────────
-
-  /// Get ScaffoldMessenger for snackbars
-  ScaffoldMessengerState get scaffoldMessenger => ScaffoldMessenger.of(this);
-
-  /// Show snackbar
-  void showSnackBar(String message,
-      {Duration duration = const Duration(seconds: 2)}) {
-    scaffoldMessenger.showSnackBar(
+  /// Show a SnackBar
+  void showSnackBar(
+    String message, {
+    Duration duration = const Duration(seconds: 4),
+    SnackBarAction? action,
+  }) {
+    ScaffoldMessenger.of(this).showSnackBar(
       SnackBar(
         content: Text(message),
         duration: duration,
+        action: action,
       ),
     );
   }
 
-  /// Push a new page
-  void push(Widget page) {
-    Navigator.of(this).push(MaterialPageRoute(builder: (_) => page));
+  /// Show an error SnackBar
+  void showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(this).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: colorScheme.error,
+        duration: const Duration(seconds: 4),
+      ),
+    );
   }
 
-  /// Push and replace current page
-  void pushReplacement(Widget page) {
-    Navigator.of(this).pushReplacement(MaterialPageRoute(builder: (_) => page));
+  /// Show a success SnackBar
+  void showSuccessSnackBar(String message) {
+    ScaffoldMessenger.of(this).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: colorScheme.primary,
+        duration: const Duration(seconds: 3),
+      ),
+    );
   }
 
-  /// Pop the current page
+  /// Navigate to a named route
+  Future<T?> pushNamed<T>(String routeName, {Object? arguments}) {
+    return Navigator.of(this).pushNamed(routeName, arguments: arguments);
+  }
+
+  /// Replace current route
+  Future<T?> pushReplacementNamed<T>(String routeName, {Object? arguments}) {
+    return Navigator.of(this)
+        .pushReplacementNamed(routeName, arguments: arguments);
+  }
+
+  /// Pop current route
   void pop<T>([T? result]) {
-    Navigator.of(this).pop<T>(result);
+    Navigator.of(this).pop(result);
   }
 
-  /// Pop until first route
-  void popUntilFirst() {
-    Navigator.of(this).popUntil((route) => route.isFirst);
+  /// Pop until a route
+  void popUntil(RoutePredicate predicate) {
+    Navigator.of(this).popUntil(predicate);
   }
 }

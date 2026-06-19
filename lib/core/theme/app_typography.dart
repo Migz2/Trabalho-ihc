@@ -1,234 +1,124 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// Typography system for Honey App using Google Fonts
-/// Display: Playfair Display (elegant, headers)
-/// Body: DM Sans (clean, readable)
+/// Typography system for Honey app
+/// Uses Playfair Display for headings and DM Sans for body
 class AppTypography {
-  AppTypography._();
+  static TextTheme buildTextTheme({required Brightness brightness}) {
+    final baseColor = brightness == Brightness.light
+        ? const Color(0xFF2C1A0E) // Light primary text
+        : const Color(0xFFF5EDE4); // Dark primary text
 
-  // ─────────────────────────────────────────────
-  // DISPLAY & HEADLINE STYLES
-  // ─────────────────────────────────────────────
+    final secondaryColor = brightness == Brightness.light
+        ? const Color(0xFF8A6D55) // Light secondary text
+        : const Color(0xFFB89880); // Dark secondary text
 
-  static TextStyle displayLarge(BuildContext context) {
-    return GoogleFonts.playfairDisplay(
-      fontSize: 32,
-      fontWeight: FontWeight.w600,
-      height: 1.2,
-      letterSpacing: -0.5,
-    );
-  }
-
-  static TextStyle headlineLarge(BuildContext context) {
-    return GoogleFonts.playfairDisplay(
-      fontSize: 26,
-      fontWeight: FontWeight.w600,
-      height: 1.3,
-      letterSpacing: -0.3,
-    );
-  }
-
-  static TextStyle headlineMedium(BuildContext context) {
-    return GoogleFonts.playfairDisplay(
-      fontSize: 22,
-      fontWeight: FontWeight.w500,
-      height: 1.3,
-      letterSpacing: -0.2,
-    );
-  }
-
-  // ─────────────────────────────────────────────
-  // TITLE STYLES (UI elements, buttons)
-  // ─────────────────────────────────────────────
-
-  static TextStyle titleLarge(BuildContext context) {
-    return GoogleFonts.dmSans(
-      fontSize: 18,
-      fontWeight: FontWeight.w600,
-      height: 1.4,
-      letterSpacing: 0,
-    );
-  }
-
-  static TextStyle titleMedium(BuildContext context) {
-    return GoogleFonts.dmSans(
-      fontSize: 16,
-      fontWeight: FontWeight.w500,
-      height: 1.4,
-      letterSpacing: 0,
-    );
-  }
-
-  // ─────────────────────────────────────────────
-  // BODY STYLES (main content)
-  // ─────────────────────────────────────────────
-
-  static TextStyle bodyLarge(BuildContext context) {
-    return GoogleFonts.dmSans(
-      fontSize: 16,
-      fontWeight: FontWeight.w400,
-      height: 1.5,
-      letterSpacing: 0,
-    );
-  }
-
-  static TextStyle bodyMedium(BuildContext context) {
-    return GoogleFonts.dmSans(
-      fontSize: 14,
-      fontWeight: FontWeight.w400,
-      height: 1.5,
-      letterSpacing: 0.25,
-    );
-  }
-
-  // ─────────────────────────────────────────────
-  // LABEL STYLES (buttons, badges, small text)
-  // ─────────────────────────────────────────────
-
-  static TextStyle labelLarge(BuildContext context) {
-    return GoogleFonts.dmSans(
-      fontSize: 14,
-      fontWeight: FontWeight.w600,
-      height: 1.4,
-      letterSpacing: 0.1,
-    );
-  }
-
-  static TextStyle labelSmall(BuildContext context) {
-    return GoogleFonts.dmSans(
-      fontSize: 11,
-      fontWeight: FontWeight.w500,
-      height: 1.3,
-      letterSpacing: 0.3,
-    );
-  }
-
-  // ─────────────────────────────────────────────
-  // CUSTOM STYLES
-  // ─────────────────────────────────────────────
-
-  /// Large timer/focus display (e.g., 24:13)
-  static TextStyle timerDisplay(BuildContext context) {
-    return GoogleFonts.playfairDisplay(
-      fontSize: 64,
-      fontWeight: FontWeight.w600,
-      height: 1.0,
-      letterSpacing: -1,
-    );
-  }
-
-  /// Medium timer for secondary displays
-  static TextStyle timerMedium(BuildContext context) {
-    return GoogleFonts.playfairDisplay(
-      fontSize: 48,
-      fontWeight: FontWeight.w600,
-      height: 1.0,
-      letterSpacing: -0.5,
-    );
-  }
-
-  /// Small timer for notifications/badges
-  static TextStyle timerSmall(BuildContext context) {
-    return GoogleFonts.playfairDisplay(
-      fontSize: 24,
-      fontWeight: FontWeight.w600,
-      height: 1.0,
-      letterSpacing: 0,
-    );
-  }
-
-  /// Bottom navigation label
-  static TextStyle navLabel(BuildContext context) {
-    return GoogleFonts.dmSans(
-      fontSize: 12,
-      fontWeight: FontWeight.w500,
-      height: 1.3,
-      letterSpacing: 0,
-    );
-  }
-
-  // ─────────────────────────────────────────────
-  // TEXT THEME (for Material 3 integration)
-  // ─────────────────────────────────────────────
-
-  static TextTheme buildTextTheme() {
     return TextTheme(
+      // Display styles - Playfair Display
       displayLarge: GoogleFonts.playfairDisplay(
         fontSize: 32,
         fontWeight: FontWeight.w600,
         height: 1.2,
+        color: baseColor,
       ),
       displayMedium: GoogleFonts.playfairDisplay(
         fontSize: 28,
         fontWeight: FontWeight.w600,
         height: 1.2,
+        color: baseColor,
       ),
       displaySmall: GoogleFonts.playfairDisplay(
         fontSize: 24,
         fontWeight: FontWeight.w600,
         height: 1.2,
+        color: baseColor,
       ),
+
+      // Headline styles - Playfair Display
       headlineLarge: GoogleFonts.playfairDisplay(
         fontSize: 26,
         fontWeight: FontWeight.w600,
         height: 1.3,
+        color: baseColor,
       ),
       headlineMedium: GoogleFonts.playfairDisplay(
         fontSize: 22,
         fontWeight: FontWeight.w500,
         height: 1.3,
+        color: baseColor,
       ),
       headlineSmall: GoogleFonts.playfairDisplay(
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: FontWeight.w500,
         height: 1.3,
+        color: baseColor,
       ),
+
+      // Title styles - DM Sans
       titleLarge: GoogleFonts.dmSans(
         fontSize: 18,
         fontWeight: FontWeight.w600,
         height: 1.4,
+        color: baseColor,
       ),
       titleMedium: GoogleFonts.dmSans(
         fontSize: 16,
         fontWeight: FontWeight.w500,
         height: 1.4,
+        color: baseColor,
       ),
       titleSmall: GoogleFonts.dmSans(
         fontSize: 14,
         fontWeight: FontWeight.w500,
         height: 1.4,
+        color: baseColor,
       ),
+
+      // Body styles - DM Sans
       bodyLarge: GoogleFonts.dmSans(
         fontSize: 16,
         fontWeight: FontWeight.w400,
         height: 1.5,
+        color: baseColor,
       ),
       bodyMedium: GoogleFonts.dmSans(
         fontSize: 14,
         fontWeight: FontWeight.w400,
         height: 1.5,
+        color: baseColor,
       ),
       bodySmall: GoogleFonts.dmSans(
         fontSize: 12,
         fontWeight: FontWeight.w400,
         height: 1.5,
+        color: secondaryColor,
       ),
+
+      // Label styles - DM Sans
       labelLarge: GoogleFonts.dmSans(
         fontSize: 14,
         fontWeight: FontWeight.w600,
-        height: 1.4,
+        height: 1.43,
+        color: baseColor,
+        letterSpacing: 0.1,
       ),
       labelMedium: GoogleFonts.dmSans(
         fontSize: 12,
-        fontWeight: FontWeight.w500,
-        height: 1.4,
+        fontWeight: FontWeight.w600,
+        height: 1.33,
+        color: baseColor,
+        letterSpacing: 0.5,
       ),
       labelSmall: GoogleFonts.dmSans(
         fontSize: 11,
         fontWeight: FontWeight.w500,
-        height: 1.3,
+        height: 1.45,
+        color: secondaryColor,
+        letterSpacing: 0.5,
       ),
     );
   }
+
+  // Empty constructor to prevent instantiation
+  AppTypography._();
 }

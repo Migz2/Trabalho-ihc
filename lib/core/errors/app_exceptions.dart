@@ -1,95 +1,52 @@
-/// Custom exception types for the Honey App
-/// Used for precise error handling across the app
-
-class AppException implements Exception {
+/// App-specific exceptions for Honey
+abstract class AppException implements Exception {
   final String message;
-  final String? code;
-  final StackTrace? stackTrace;
 
-  AppException({
-    required this.message,
-    this.code,
-    this.stackTrace,
-  });
+  AppException(this.message);
 
   @override
-  String toString() => 'AppException: $message${code != null ? ' ($code)' : ''}';
+  String toString() => message;
 }
 
-/// Thrown when a Hive storage operation fails
-class StorageException extends AppException {
-  StorageException({
-    required String message,
-    String? code,
-    StackTrace? stackTrace,
-  }) : super(
-    message: 'Storage Error: $message',
-    code: code ?? 'STORAGE_ERROR',
-    stackTrace: stackTrace,
-  );
+/// Thrown when a Hive operation fails
+class HiveException extends AppException {
+  HiveException(String message) : super('Hive Error: $message');
 }
 
-/// Thrown when invalid data is provided
-class ValidationException extends AppException {
-  ValidationException({
-    required String message,
-    String? code,
-    StackTrace? stackTrace,
-  }) : super(
-    message: 'Validation Error: $message',
-    code: code ?? 'VALIDATION_ERROR',
-    stackTrace: stackTrace,
-  );
+/// Thrown when user data is not found
+class UserNotFoundException extends AppException {
+  UserNotFoundException()
+      : super('User not found. Please complete onboarding.');
 }
 
-/// Thrown when a resource is not found
-class NotFoundException extends AppException {
-  NotFoundException({
-    required String message,
-    String? code,
-    StackTrace? stackTrace,
-  }) : super(
-    message: 'Not Found: $message',
-    code: code ?? 'NOT_FOUND',
-    stackTrace: stackTrace,
-  );
+/// Thrown when pet data is not found
+class PetNotFoundException extends AppException {
+  PetNotFoundException() : super('Pet not found. Please create a pet.');
+}
+
+/// Thrown when a session operation fails
+class SessionException extends AppException {
+  SessionException(String message) : super('Session Error: $message');
+}
+
+/// Thrown when a shop operation fails
+class ShopException extends AppException {
+  ShopException(String message) : super('Shop Error: $message');
+}
+
+/// Thrown when an invalid operation is attempted
+class InvalidOperationException extends AppException {
+  InvalidOperationException(String message)
+      : super('Invalid Operation: $message');
 }
 
 /// Thrown when a permission is denied
-class PermissionException extends AppException {
-  PermissionException({
-    required String message,
-    String? code,
-    StackTrace? stackTrace,
-  }) : super(
-    message: 'Permission Denied: $message',
-    code: code ?? 'PERMISSION_DENIED',
-    stackTrace: stackTrace,
-  );
+class PermissionDeniedException extends AppException {
+  PermissionDeniedException(String permission)
+      : super('Permission denied: $permission');
 }
 
-/// Thrown when a network operation fails
-class NetworkException extends AppException {
-  NetworkException({
-    required String message,
-    String? code,
-    StackTrace? stackTrace,
-  }) : super(
-    message: 'Network Error: $message',
-    code: code ?? 'NETWORK_ERROR',
-    stackTrace: stackTrace,
-  );
-}
-
-/// Thrown when an operation times out
-class TimeoutException extends AppException {
-  TimeoutException({
-    required String message,
-    String? code,
-    StackTrace? stackTrace,
-  }) : super(
-    message: 'Timeout: $message',
-    code: code ?? 'TIMEOUT',
-    stackTrace: stackTrace,
-  );
+/// Thrown for unknown errors
+class UnknownException extends AppException {
+  UnknownException(String message) : super('Unknown Error: $message');
 }

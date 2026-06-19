@@ -1,57 +1,53 @@
 import 'package:flutter/material.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_radius.dart';
 import '../../core/theme/app_spacing.dart';
-import '../../core/extensions/context_extensions.dart';
+import '../../core/theme/app_radius.dart';
 
-/// Standard card component for Honey App
+/// Standard card widget for Honey app
 class HoneyCard extends StatelessWidget {
   final Widget child;
-  final EdgeInsets? padding;
-  final EdgeInsets? margin;
-  final Color? backgroundColor;
-  final double? elevation;
-  final BorderRadius? borderRadius;
+  final EdgeInsetsGeometry padding;
+  final EdgeInsetsGeometry margin;
   final VoidCallback? onTap;
-  final Gradient? gradient;
+  final double elevation;
+  final Color? backgroundColor;
+  final BorderRadius? borderRadius;
 
   const HoneyCard({
     Key? key,
     required this.child,
-    this.padding,
-    this.margin,
-    this.backgroundColor,
-    this.elevation,
-    this.borderRadius,
+    this.padding = const EdgeInsets.all(AppSpacing.md),
+    this.margin = EdgeInsets.zero,
     this.onTap,
-    this.gradient,
+    this.elevation = 0,
+    this.backgroundColor,
+    this.borderRadius,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final card = Card(
-      backgroundColor: backgroundColor,
-      elevation: elevation ?? 1,
-      shape: RoundedRectangleBorder(borderRadius: borderRadius ?? AppRadius.cardRadius),
-      margin: margin ?? EdgeInsets.zero,
-      child: Container(
-        decoration: gradient != null
-            ? BoxDecoration(
-              gradient: gradient,
-              borderRadius: borderRadius ?? AppRadius.cardRadius,
-            )
-            : null,
-        child: Padding(
-          padding: padding ?? const EdgeInsets.all(AppSpacing.md),
-          child: child,
-        ),
+    final theme = Theme.of(context);
+
+    Widget card = Card(
+      margin: margin,
+      elevation: elevation,
+      color: backgroundColor ?? theme.colorScheme.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: borderRadius ?? AppRadius.radiusMd,
+      ),
+      child: Padding(
+        padding: padding,
+        child: child,
       ),
     );
 
     if (onTap != null) {
-      return GestureDetector(
-        onTap: onTap,
-        child: card,
+      return Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: borderRadius ?? AppRadius.radiusMd,
+          child: card,
+        ),
       );
     }
 

@@ -2,123 +2,92 @@ import 'package:intl/intl.dart';
 
 /// Utility functions for date and time operations
 class DateUtils {
-  DateUtils._();
-
-  /// Get current date at midnight
-  static DateTime getToday() {
-    final now = DateTime.now();
-    return DateTime(now.year, now.month, now.day);
-  }
-
-  /// Format DateTime to "dd/MM/yyyy"
-  static String formatDate(DateTime date) {
-    return DateFormat('dd/MM/yyyy').format(date);
-  }
-
-  /// Format DateTime to "HH:mm"
-  static String formatTime(DateTime dateTime) {
-    return DateFormat('HH:mm').format(dateTime);
-  }
-
-  /// Format DateTime to "dd/MM/yyyy HH:mm"
-  static String formatDateTime(DateTime dateTime) {
-    return DateFormat('dd/MM/yyyy HH:mm').format(dateTime);
-  }
-
-  /// Format DateTime to "EEEE, dd MMMM" (e.g., "Monday, 15 January")
-  static String formatDateLong(DateTime date) {
-    return DateFormat('EEEE, dd MMMM', 'pt_BR').format(date);
-  }
-
-  /// Format duration to "HH:mm:ss"
+  /// Format a duration to a readable string (HH:MM:SS)
   static String formatDuration(Duration duration) {
     final hours = duration.inHours;
     final minutes = duration.inMinutes.remainder(60);
     final seconds = duration.inSeconds.remainder(60);
 
-    return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
-  }
-
-  /// Format duration to "mm:ss"
-  static String formatDurationShort(Duration duration) {
-    final minutes = duration.inMinutes;
-    final seconds = duration.inSeconds.remainder(60);
-
+    if (hours > 0) {
+      return '$hours:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+    }
     return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
-  /// Check if two dates are the same day
+  /// Format a duration to MM:SS
+  static String formatDurationShort(Duration duration) {
+    final minutes = duration.inMinutes;
+    final seconds = duration.inSeconds.remainder(60);
+    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+  }
+
+  /// Format a DateTime to a date string
+  static String formatDate(DateTime date, {String format = 'dd/MM/yyyy'}) {
+    return DateFormat(format).format(date);
+  }
+
+  /// Format a DateTime to a time string
+  static String formatTime(DateTime time, {String format = 'HH:mm'}) {
+    return DateFormat(format).format(time);
+  }
+
+  /// Format a DateTime to a full date-time string
+  static String formatDateTime(DateTime dateTime,
+      {String format = 'dd/MM/yyyy HH:mm'}) {
+    return DateFormat(format).format(dateTime);
+  }
+
+  /// Check if two dates are on the same day
   static bool isSameDay(DateTime date1, DateTime date2) {
     return date1.year == date2.year &&
         date1.month == date2.month &&
         date1.day == date2.day;
   }
 
-  /// Check if a date is today
+  /// Get the start of a day
+  static DateTime getStartOfDay(DateTime date) {
+    return DateTime(date.year, date.month, date.day);
+  }
+
+  /// Get the end of a day
+  static DateTime getEndOfDay(DateTime date) {
+    return DateTime(date.year, date.month, date.day, 23, 59, 59, 999);
+  }
+
+  /// Get days between two dates
+  static int daysBetween(DateTime from, DateTime to) {
+    from = getStartOfDay(from);
+    to = getStartOfDay(to);
+    return to.difference(from).inDays;
+  }
+
+  /// Check if date is today
   static bool isToday(DateTime date) {
     return isSameDay(date, DateTime.now());
   }
 
-  /// Check if a date is yesterday
+  /// Check if date is yesterday
   static bool isYesterday(DateTime date) {
-    return isSameDay(date, DateTime.now().subtract(const Duration(days: 1)));
+    final yesterday = DateTime.now().subtract(const Duration(days: 1));
+    return isSameDay(date, yesterday);
   }
 
-  /// Get start of day
-  static DateTime startOfDay(DateTime date) {
-    return DateTime(date.year, date.month, date.day);
+  /// Get relative date string (Today, Yesterday, etc)
+  static String getRelativeDateString(DateTime date) {
+    final now = DateTime.now();
+    if (isToday(date)) {
+      return 'Today';
+    } else if (isYesterday(date)) {
+      return 'Yesterday';
+    } else if (daysBetween(date, now) < 7) {
+      return 'This week';
+    } else if (daysBetween(date, now) < 30) {
+      return 'This month';
+    } else {
+      return formatDate(date);
+    }
   }
 
-  /// Get end of day
-  static DateTime endOfDay(DateTime date) {
-    return DateTime(date.year, date.month, date.day, 23, 59, 59, 999);
-  }
-
-  /// Get difference in days between two dates
-  static int daysBetween(DateTime from, DateTime to) {
-    from = DateTime(from.year, from.month, from.day);
-    to = DateTime(to.year, to.month, to.day);
-    return (to.difference(from).inHours / 24).round();
-  }
-
-  /// Get the week number of a date
-  static int getWeekNumber(DateTime date) {
-    return ((date.day - date.weekday + 10) / 7).floor();
-  }
-
-  /// Get the week start date (Monday)
-  static DateTime getWeekStart(DateTime date) {
-    return date.subtract(Duration(days: date.weekday - 1));
-  }
-
-  /// Get the week end date (Sunday)
-  static DateTime getWeekEnd(DateTime date) {
-    return date.add(Duration(days: DateTime.sunday - date.weekday));
-  }
-
-  /// Format seconds to human readable duration
-  /// e.g., "2 hours, 30 minutes"
-  static String formatSecondsToReadable(int seconds) {
-    final duration = Duration(seconds: seconds);
-    final days = duration.inDays;
-    final hours = duration.inHours % 24;
-    final minutes = duration.inMinutes % 60;
-
-    final parts = <String>[];
-    if (days > 0) parts.add('$days dia${days > 1 ? 's' : ''}');
-    if (hours > 0) parts.add('$hours hora${hours > 1 ? 's' : ''}');
-    if (minutes > 0) parts.add('$minutes minuto${minutes > 1 ? 's' : ''}');
-
-    return parts.isEmpty ? '0 minutos' : parts.join(', ');
-  }
-
-  /// Check if a date is in the past
-  static bool isPast(DateTime date) {
-    return date.isBefore(DateTime.now());
-  }
-
-  /// Check if a date is in the future
-  static bool isFuture(DateTime date) {
-    return date.isAfter(DateTime.now());
-  }
+  // Empty constructor to prevent instantiation
+  DateUtils._();
 }

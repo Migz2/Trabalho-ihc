@@ -1,39 +1,57 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/services/hive_service.dart';
-import '../../core/constants/hive_keys.dart';
+import '../../features/focus/presentation/pages/focus_page.dart';
+import '../../features/onboarding/presentation/pages/onboarding_page.dart';
+import '../../features/pet/presentation/pages/pet_page.dart';
+import '../../features/shop/presentation/pages/shop_page.dart';
+import '../widgets/home_shell.dart';
 import 'app_routes.dart';
 
-// Import placeholder screens (will be replaced with actual feature screens)
-import '../../features/focus/presentation/pages/focus_page.dart';
-import '../../features/pet/presentation/pages/pet_page.dart';
-import '../../features/statistics/presentation/pages/statistics_page.dart';
-import '../../features/settings/presentation/pages/settings_page.dart';
-import '../../features/onboarding/presentation/pages/onboarding_page.dart';
-import '../widgets/home_shell.dart';
+// Placeholder pages for remaining tabs
+class HistoryPage extends StatelessWidget {
+  const HistoryPage({Key? key}) : super(key: key);
 
-/// GoRouter configuration for the Honey App
-/// Provides complete navigation structure with bottom navigation shell
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Histórico')),
+      body: const Center(
+        child: Text('Página de Histórico'),
+      ),
+    );
+  }
+}
+
+class SettingsPage extends StatelessWidget {
+  const SettingsPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Ajustes')),
+      body: const Center(
+        child: Text('Página de Ajustes'),
+      ),
+    );
+  }
+}
+
+/// Configure GoRouter for Honey app
 final appRouter = GoRouter(
-  initialLocation: AppRoutes.focus,
+  initialLocation: AppRoutes.root,
   redirect: (context, state) {
-    // Check if onboarding is complete
-    try {
-      final prefs = HiveService.userPreferences;
-      final onboardingComplete =
-          prefs.get(HiveKeys.onboardingCompleteKey, defaultValue: false) as bool;
+    // Check if onboarding is completed using the helper method
+    final onboardingCompleted = HiveService.isOnboardingCompleted();
 
-      // If onboarding not complete and not already on onboarding route
-      if (!onboardingComplete && state.uri.path != AppRoutes.onboarding) {
-        return AppRoutes.onboarding;
-      }
+    // Redirect to onboarding if not completed
+    if (!onboardingCompleted && state.uri.path != AppRoutes.onboarding) {
+      return AppRoutes.onboarding;
+    }
 
-      // If onboarding complete and on onboarding route, redirect to home
-      if (onboardingComplete && state.uri.path == AppRoutes.onboarding) {
-        return AppRoutes.focus;
-      }
-    } catch (e) {
-      print('Error checking onboarding status: $e');
+    // Redirect root to focus page
+    if (state.uri.path == AppRoutes.root) {
+      return onboardingCompleted ? AppRoutes.focus : AppRoutes.onboarding;
     }
 
     return null;
@@ -46,32 +64,25 @@ final appRouter = GoRouter(
       builder: (context, state) => const OnboardingPage(),
     ),
 
-    // Shell route for main navigation with bottom nav
+    // Shell route with bottom navigation
     ShellRoute(
       builder: (context, state, child) => HomeShell(child: child),
       routes: [
-        // Focus tab
         GoRoute(
           path: AppRoutes.focus,
           name: 'focus',
           builder: (context, state) => const FocusPage(),
         ),
-
-        // Pet tab
         GoRoute(
           path: AppRoutes.pet,
           name: 'pet',
           builder: (context, state) => const PetPage(),
         ),
-
-        // Statistics/History tab
         GoRoute(
-          path: AppRoutes.history,
-          name: 'history',
-          builder: (context, state) => const StatisticsPage(),
+          path: AppRoutes.shop,
+          name: 'shop',
+          builder: (context, state) => const ShopPage(),
         ),
-
-        // Settings tab
         GoRoute(
           path: AppRoutes.settings,
           name: 'settings',
@@ -80,40 +91,4 @@ final appRouter = GoRouter(
       ],
     ),
   ],
-
-  // Error page
-  errorBuilder: (context, state) => ErrorPage(error: state.error),
 );
-
-/// Error page for invalid routes
-class ErrorPage extends StatelessWidget {
-  final Exception? error;
-
-  const ErrorPage({Key? key, this.error}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Error')),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.error_outline, size: 64),
-            const SizedBox(height: 16),
-            const Text('Page not found'),
-            if (error != null) ...[
-              const SizedBox(height: 16),
-              Text(error.toString()),
-            ],
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () => context.go(AppRoutes.focus),
-              child: const Text('Go back to home'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}

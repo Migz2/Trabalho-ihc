@@ -1,48 +1,73 @@
 import 'package:flutter/material.dart';
-import '../../core/extensions/context_extensions.dart';
 
-/// Base scaffold wrapper for Honey App screens
+/// Base scaffold widget for Honey app
+/// Handles AppBar, bottom nav, and standard layout
 class HoneyScaffold extends StatelessWidget {
-  final String? title;
   final Widget body;
+  final String? appBarTitle;
+  final List<Widget>? appBarActions;
+  final bool showAppBar;
+  final PreferredSizeWidget? appBar;
   final Widget? floatingActionButton;
   final FloatingActionButtonLocation? floatingActionButtonLocation;
-  final bool showBackButton;
-  final List<Widget>? actions;
-  final PreferredSizeWidget? bottomNavigationBar;
+  final BottomNavigationBarItem? navigationItem;
+  final int currentIndex;
+  final ValueChanged<int>? onNavigationChanged;
+  final List<BottomNavigationBarItem>? navigationItems;
+  final Widget? bottomNavigationBar;
   final Color? backgroundColor;
-  final VoidCallback? onBackPressed;
+  final EdgeInsetsGeometry bodyPadding;
+  final bool safeArea;
 
   const HoneyScaffold({
     Key? key,
-    this.title,
     required this.body,
+    this.appBarTitle,
+    this.appBarActions,
+    this.showAppBar = true,
+    this.appBar,
     this.floatingActionButton,
     this.floatingActionButtonLocation,
-    this.showBackButton = false,
-    this.actions,
+    this.navigationItem,
+    this.currentIndex = 0,
+    this.onNavigationChanged,
+    this.navigationItems,
     this.bottomNavigationBar,
     this.backgroundColor,
-    this.onBackPressed,
+    this.bodyPadding = EdgeInsets.zero,
+    this.safeArea = true,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    Widget content = body;
+
+    if (bodyPadding != EdgeInsets.zero) {
+      content = Padding(
+        padding: bodyPadding,
+        child: content,
+      );
+    }
+
+    if (safeArea) {
+      content = SafeArea(
+        child: content,
+      );
+    }
+
     return Scaffold(
-      backgroundColor: backgroundColor,
-      appBar: title != null || showBackButton || actions != null
-          ? AppBar(
-            title: title != null ? Text(title!) : null,
-            leading: showBackButton
-                ? IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: onBackPressed ?? () => context.pop(),
-            )
-                : null,
-            actions: actions,
-          )
-          : null,
-      body: body,
+      backgroundColor: backgroundColor ?? theme.scaffoldBackgroundColor,
+      appBar: appBar ??
+          (showAppBar
+              ? AppBar(
+                  title: appBarTitle != null ? Text(appBarTitle!) : null,
+                  actions: appBarActions,
+                  elevation: 0,
+                )
+              : null),
+      body: content,
       floatingActionButton: floatingActionButton,
       floatingActionButtonLocation: floatingActionButtonLocation,
       bottomNavigationBar: bottomNavigationBar,
