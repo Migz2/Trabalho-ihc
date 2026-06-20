@@ -6,56 +6,35 @@ part of 'shop_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$shopRepositoryHash() => r'cf31e2c4f80d1e2c5e2e2c4f80d1e2c5e2e2c4f';
+String _$shopRepositoryHash() => r'65695bd06271d0907151585ce80ad51ba60fe8f1';
 
-class ShopRepositoryProvider extends Provider<ShopRepository> {
-  ShopRepositoryProvider() : super.internal(
-        shopRepository,
-        name: r'shopRepositoryProvider',
-        debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-            ? null
-            : _$shopRepositoryHash,
-      );
+/// See also [shopRepository].
+@ProviderFor(shopRepository)
+final shopRepositoryProvider = AutoDisposeProvider<ShopRepository>.internal(
+  shopRepository,
+  name: r'shopRepositoryProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$shopRepositoryHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
-  @override
-  ProxyProviderElement<ShopRepository> createElement() {
-    return _ShopRepositoryProviderElement(this);
-  }
-}
-
-class _ShopRepositoryProviderElement extends ProxyProviderElement<ShopRepository> {
-  _ShopRepositoryProviderElement(super.provider);
-
-  @override
-  String get debugLabel => super.debugLabel ?? '(${provider.runtimeType})';
-}
-
-// ignore: unused_element
-const shopRepositoryProvider = ShopRepositoryProvider();
-String _$ShopHash() => r'5e2e2c4f80d1e2c5e2e2c4f80d1e2c5e2e2c4f';
+typedef ShopRepositoryRef = AutoDisposeProviderRef<ShopRepository>;
+String _$shopHash() => r'49901e76b15b6f3a6709a2ab7a13e1127fdd0b25';
 
 /// See also [Shop].
-class ShopProvider extends AsyncNotifierProvider<Shop, List<ShopItemEntity>> {
-  ShopProvider() : super.internal(
-        Shop.new,
-        name: r'shopProvider',
-        debugGetCreateSourceHash:
-            const bool.fromEnvironment('dart.vm.product') ? null : _$ShopHash,
-      );
+@ProviderFor(Shop)
+final shopProvider =
+    AutoDisposeAsyncNotifierProvider<Shop, List<ShopItemEntity>>.internal(
+  Shop.new,
+  name: r'shopProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$shopHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
-  @override
-  AsyncNotifierProviderElement<Shop, List<ShopItemEntity>> createElement() {
-    return _ShopProviderElement(this);
-  }
-}
-
-class _ShopProviderElement
-    extends AsyncNotifierProviderElement<Shop, List<ShopItemEntity>> {
-  _ShopProviderElement(super.provider);
-
-  @override
-  String get debugLabel => super.debugLabel ?? '(${provider.runtimeType})';
-}
-
-// ignore: unused_element
-const shopProvider = ShopProvider();
+typedef _$Shop = AutoDisposeAsyncNotifier<List<ShopItemEntity>>;
+// ignore_for_file: type=lint
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

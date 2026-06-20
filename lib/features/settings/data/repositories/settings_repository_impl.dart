@@ -1,8 +1,8 @@
 import 'package:hive/hive.dart';
 import '../../domain/entities/settings_entity.dart';
 import '../../domain/repositories/settings_repository.dart';
-import '../../../core/constants/hive_keys.dart';
-import '../../../core/services/hive_service.dart';
+import '../../../../core/constants/hive_keys.dart';
+import '../../../../core/services/hive_service.dart';
 import '../models/settings_model.dart';
 
 class SettingsRepositoryImpl implements SettingsRepository {
@@ -46,6 +46,13 @@ class SettingsRepositoryImpl implements SettingsRepository {
   Future<void> toggleAppBlocking(bool enabled) async {
     final s = await getSettings();
     final updated = s.copyWith(appBlockingEnabled: enabled);
+    await saveSettings(updated);
+  }
+
+  @override
+  Future<void> updateBlockIntensity(BlockIntensity intensity) async {
+    final s = await getSettings();
+    final updated = s.copyWith(blockIntensity: intensity);
     await saveSettings(updated);
   }
 

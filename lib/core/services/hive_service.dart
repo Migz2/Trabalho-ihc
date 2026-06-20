@@ -8,8 +8,10 @@ import '../../features/pet/data/models/pet_mood_adapter.dart';
 import '../../features/shop/data/models/shop_item_model.dart';
 import '../../features/shop/data/models/shop_item_adapters.dart';
 import '../../features/statistics/data/models/achievement_model.dart';
+import '../../features/statistics/data/models/achievement_id_adapter.dart';
 import '../../features/statistics/data/models/statistics_model.dart';
 import '../../features/settings/data/models/settings_model.dart';
+import '../../features/settings/data/models/settings_enum_adapters.dart';
 import '../constants/hive_keys.dart';
 import '../errors/app_exceptions.dart';
 

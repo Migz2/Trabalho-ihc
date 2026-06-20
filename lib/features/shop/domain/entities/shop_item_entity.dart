@@ -15,7 +15,7 @@ class ShopItemEntity {
   final bool equipped;
   final String? backgroundColorHex;
 
-  ShopItemEntity({
+  const ShopItemEntity({
     required this.id,
     required this.name,
     required this.description,

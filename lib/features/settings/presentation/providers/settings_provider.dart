@@ -3,9 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/settings_entity.dart';
 import '../../domain/repositories/settings_repository.dart';
 import '../../data/repositories/settings_repository_impl.dart';
-import '../../../core/services/providers/service_providers.dart';
-import '../../../core/services/notification_service.dart';
-import '../../../core/services/ambient_sound_service.dart';
+import '../../../../core/services/providers/service_providers.dart';
 
 final settingsProvider = AsyncNotifierProvider<SettingsNotifier, SettingsEntity?>(() => SettingsNotifier());
 
@@ -20,7 +18,6 @@ final themeModeProvider = StateProvider<ThemeMode>((ref) {
         case AppThemeMode.dark:
           return ThemeMode.dark;
         case AppThemeMode.system:
-        default:
           return ThemeMode.system;
       }
     },
@@ -99,6 +96,17 @@ class SettingsNotifier extends AsyncNotifier<SettingsEntity?> {
     try {
       state = const AsyncValue.loading();
       await _repo.toggleAppBlocking(enabled);
+      final s = await _repo.getSettings();
+      state = AsyncValue.data(s);
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+    }
+  }
+
+  Future<void> updateBlockIntensity(BlockIntensity intensity) async {
+    try {
+      state = const AsyncValue.loading();
+      await _repo.updateBlockIntensity(intensity);
       final s = await _repo.getSettings();
       state = AsyncValue.data(s);
     } catch (e, st) {

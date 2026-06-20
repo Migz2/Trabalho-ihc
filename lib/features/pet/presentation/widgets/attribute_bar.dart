@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:honey/core/theme/app_colors.dart';
 import 'package:honey/core/theme/app_spacing.dart';
+import 'package:honey/core/utils/animation_constants.dart';
 
 class AttributeBar extends StatelessWidget {
   final String label;
@@ -16,7 +18,10 @@ class AttributeBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final percentage = ((value / 100) * 100).toStringAsFixed(0);
+    final percentage = value.round().toString();
+    final trackColor =
+        isDark ? AppColors.darkSurfaceVariant : AppColors.lightSurfaceVariant;
+    final clampedValue = value.clamp(0.0, 100.0);
 
     return Row(
       children: [
@@ -33,21 +38,41 @@ class AttributeBar extends StatelessWidget {
         ),
         const SizedBox(width: AppSpacing.md),
         Expanded(
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(100),
-            child: LinearProgressIndicator(
-              value: (value / 100).clamp(0.0, 1.0),
-              minHeight: 10,
-              backgroundColor: isDark
-                  ? Colors.grey.shade700
-                  : Colors.grey.shade300,
-              valueColor: AlwaysStoppedAnimation<Color>(barColor),
-            ),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return Container(
+                height: 12,
+                decoration: BoxDecoration(
+                  color: trackColor,
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                child: TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0, end: clampedValue),
+                  duration: AnimationDurations.slow,
+                  curve: AnimationCurves.standard,
+                  builder: (context, animatedValue, _) {
+                    return Align(
+                      alignment: Alignment.centerLeft,
+                      child: FractionallySizedBox(
+                        widthFactor: animatedValue / 100,
+                        child: Container(
+                          height: 12,
+                          decoration: BoxDecoration(
+                            color: barColor,
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
           ),
         ),
         const SizedBox(width: AppSpacing.md),
         SizedBox(
-          width: 40,
+          width: 44,
           child: Text(
             '$percentage%',
             textAlign: TextAlign.end,

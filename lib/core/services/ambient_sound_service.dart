@@ -49,7 +49,6 @@ class AmbientSoundService {
       case AmbientSound.ocean:
         return 'assets/audio/ocean.mp3';
       case AmbientSound.none:
-      default:
         return '';
     }
   }

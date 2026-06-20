@@ -1,12 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../presentation/providers/settings_provider.dart';
 import '../../domain/entities/settings_entity.dart';
-import '../../../shared/widgets/honey_card.dart';
-import '../../../shared/widgets/honey_button.dart';
-import '../../../shared/widgets/coin_display.dart';
 import '../pages/profile_page.dart';
 import 'app_blocking_page.dart';
+import '../../../../core/services/providers/service_providers.dart';
+import '../../../focus/presentation/providers/user_provider.dart';
+import '../../../pet/presentation/providers/pet_provider.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -15,7 +18,10 @@ class SettingsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(settingsProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Configurações')),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
       body: async.when(
         data: (settings) {
           if (settings == null) return const SizedBox.shrink();
@@ -45,17 +51,19 @@ class SettingsPage extends ConsumerWidget {
                               color: Theme.of(context).colorScheme.primary.withOpacity(0.15),
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: Center(child: Text(settings.userName.substring(0,1), style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Theme.of(context).colorScheme.primary))),
+                            child: Center(child: Text(settings.userName.isNotEmpty ? settings.userName.substring(0,1) : '?', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Theme.of(context).colorScheme.primary))),
                           ),
                           const SizedBox(width: 12),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(settings.userName, style: Theme.of(context).textTheme.titleMedium),
-                              Text('Estudante · Nível 1', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
-                            ],
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(settings.userName, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleMedium),
+                                Text('Estudante · Nível 1', maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                              ],
+                            ),
                           ),
-                          const Spacer(),
+                          const SizedBox(width: 8),
                           Icon(Icons.chevron_right, color: Theme.of(context).colorScheme.onSurfaceVariant),
                         ],
                       ),
@@ -80,7 +88,7 @@ class SettingsPage extends ConsumerWidget {
                           unit: 'min',
                           onChanged: (v) => ref.read(settingsProvider.notifier).updateFocusDuration(v.round()),
                         ),
-                        const Divider(),
+                        Divider(height: 1, thickness: 0.5, color: Theme.of(context).dividerColor),
                         _SliderTile(
                           label: 'Pausa curta',
                           value: settings.shortBreakMinutes.toDouble(),
@@ -90,7 +98,7 @@ class SettingsPage extends ConsumerWidget {
                           unit: 'min',
                           onChanged: (v) => ref.read(settingsProvider.notifier).updateShortBreak(v.round()),
                         ),
-                        const Divider(),
+                        Divider(height: 1, thickness: 0.5, color: Theme.of(context).dividerColor),
                         _SliderTile(
                           label: 'Pausa longa',
                           value: settings.longBreakMinutes.toDouble(),
@@ -102,6 +110,24 @@ class SettingsPage extends ConsumerWidget {
                         ),
                       ],
                     ),
+                  ),
+                ),
+
+                const _SectionHeader('PET'),
+                Card(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  child: Consumer(
+                    builder: (context, ref, _) {
+                      final petAsync = ref.watch(petProvider);
+                      final petName = petAsync.value?.name ?? 'Mel';
+                      return _NavigationTile(
+                        icon: Icons.pets,
+                        iconColor: Theme.of(context).colorScheme.primary,
+                        title: 'Nome do pet',
+                        subtitle: petName,
+                        onTap: () => _showRenameDialog(context, ref, petName),
+                      );
+                    },
                   ),
                 ),
 
@@ -122,7 +148,8 @@ class SettingsPage extends ConsumerWidget {
                             if (v) {
                               final granted = await ref.read(appBlockingServiceProvider).requestUsageStatsPermission();
                               if (!granted) {
-                                showDialog(context: context, builder: (_) => AlertDialog(title: const Text('Permissão necessária'), content: const Text('Permissão de acesso às estatísticas de uso é necessária para monitorar apps.'), actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK'))]));
+                                if (!context.mounted) return;
+                                unawaited(showDialog(context: context, builder: (_) => AlertDialog(title: const Text('Permissão necessária'), content: const Text('Permissão de acesso às estatísticas de uso é necessária para monitorar apps.'), actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK'))])));
                                 return;
                               }
                             }
@@ -130,7 +157,7 @@ class SettingsPage extends ConsumerWidget {
                           },
                           onTap: settings.appBlockingEnabled ? () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AppBlockingPage())) : null,
                         ),
-                        const Divider(),
+                        Divider(height: 1, thickness: 0.5, color: Theme.of(context).dividerColor),
                         _ToggleTile(
                           icon: Icons.notifications_off_outlined,
                           iconColor: Colors.orange,
@@ -139,7 +166,7 @@ class SettingsPage extends ConsumerWidget {
                           value: settings.silenceNotifications,
                           onChanged: (v) => ref.read(settingsProvider.notifier).toggleSilenceNotifications(v),
                         ),
-                        const Divider(),
+                        Divider(height: 1, thickness: 0.5, color: Theme.of(context).dividerColor),
                         _NavigationTile(
                           icon: Icons.volume_up_outlined,
                           iconColor: Colors.blue,
@@ -178,12 +205,26 @@ class SettingsPage extends ConsumerWidget {
                         title: const Text('Perfil'),
                         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfilePage())),
                       ),
-                      const Divider(),
+                      Divider(height: 1, thickness: 0.5, color: Theme.of(context).dividerColor),
                       ListTile(
                         leading: Icon(Icons.cloud_upload_outlined),
                         title: const Text('Backup & sincronização'),
                         subtitle: Text('Última: hoje'),
                         onTap: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Sincronização em breve! ☁️'))),
+                      ),
+                      Divider(height: 1, thickness: 0.5, color: Theme.of(context).dividerColor),
+                      ListTile(
+                        leading: const Icon(Icons.bug_report_outlined),
+                        title: const Text('Adicionar 500 moedas (teste)'),
+                        subtitle: const Text('Atalho de desenvolvimento'),
+                        onTap: () async {
+                          await ref.read(userProvider.notifier).addCoins(500);
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('🍯 +500 moedas adicionadas!')),
+                            );
+                          }
+                        },
                       ),
                     ],
                   ),
@@ -198,6 +239,49 @@ class SettingsPage extends ConsumerWidget {
         },
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, st) => Center(child: Text('Erro ao carregar configurações: $e')),
+      ),
+    );
+  }
+
+  void _showRenameDialog(BuildContext context, WidgetRef ref, String currentPetName) {
+    final controller = TextEditingController(text: currentPetName);
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Renomear pet'),
+        content: TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            hintText: 'Novo nome',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+          ),
+          maxLength: 12,
+          textCapitalization: TextCapitalization.words,
+          autofocus: true,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            onPressed: () async {
+              final name = controller.text.trim();
+              if (name.isNotEmpty) {
+                await ref.read(petProvider.notifier).renamePet(name);
+              }
+              Navigator.pop(dialogContext);
+              if (context.mounted && name.isNotEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('$name aí vem! 🐾')),
+                );
+              }
+            },
+            child: const Text('Salvar'),
+          ),
+        ],
       ),
     );
   }
@@ -222,7 +306,11 @@ class SettingsPage extends ConsumerWidget {
                   const SizedBox(width: 8),
                   const Text('Volume'),
                   const Spacer(),
-                  Slider(value: settings.ambientVolume, onChanged: (v) => ref.read(settingsProvider.notifier).updateAmbientVolume(v)),
+                  Slider(
+                    value: settings.ambientVolume,
+                    onChanged: (v) => ref.read(settingsProvider.notifier).updateAmbientVolume(v),
+                    onChangeEnd: (_) => HapticFeedback.selectionClick(),
+                  ),
                 ],
               ),
               Expanded(
@@ -261,7 +349,6 @@ class SettingsPage extends ConsumerWidget {
       case AmbientSound.ocean:
         return '🌊';
       case AmbientSound.none:
-      default:
         return '🔇';
     }
   }
@@ -307,13 +394,21 @@ class _SliderTile extends StatelessWidget {
           SliderTheme(
             data: SliderTheme.of(context).copyWith(
               activeTrackColor: Theme.of(context).colorScheme.primary,
-              inactiveTrackColor: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+              inactiveTrackColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
               thumbColor: Theme.of(context).colorScheme.primary,
-              overlayColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-              trackHeight: 3.0,
-              thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8),
+              overlayColor: Theme.of(context).colorScheme.primary.withOpacity(0.15),
+              trackHeight: 4.0,
+              thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10),
+              overlayShape: const RoundSliderOverlayShape(overlayRadius: 20),
             ),
-            child: Slider(value: value, min: min, max: max, divisions: divisions, onChanged: onChanged),
+            child: Slider(
+              value: value,
+              min: min,
+              max: max,
+              divisions: divisions,
+              onChanged: onChanged,
+              onChangeEnd: (_) => HapticFeedback.selectionClick(),
+            ),
           ),
         ],
       ),
@@ -348,7 +443,15 @@ class _ToggleTile extends StatelessWidget {
                 children: [Text(title, style: Theme.of(context).textTheme.titleMedium), Text(subtitle, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant))],
               ),
             ),
-            Switch(value: value, onChanged: onChanged, activeColor: Theme.of(context).colorScheme.primary, activeTrackColor: Theme.of(context).colorScheme.primary.withOpacity(0.4))
+            Switch(
+              value: value,
+              onChanged: (v) {
+                HapticFeedback.lightImpact();
+                onChanged(v);
+              },
+              activeColor: Theme.of(context).colorScheme.primary,
+              activeTrackColor: Theme.of(context).colorScheme.primary.withOpacity(0.4),
+            )
           ],
         ),
       ),
@@ -373,222 +476,6 @@ class _NavigationTile extends StatelessWidget {
       subtitle: subtitle.isNotEmpty ? Text(subtitle) : null,
       trailing: Icon(Icons.chevron_right),
       onTap: onTap,
-    );
-  }
-}
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/settings_provider.dart';
-import '../../domain/entities/settings_entity.dart';
-import 'profile_page.dart';
-import 'app_blocking_page.dart';
-
-class SettingsPage extends ConsumerWidget {
-  const SettingsPage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final async = ref.watch(settingsProvider);
-    return Scaffold(
-      appBar: AppBar(title: const Text('Configurações')),
-      body: async.when(
-        data: (s) => _buildBody(context, ref, s!),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, st) => Center(child: Text('Erro carregando configurações')),
-      ),
-    );
-  }
-
-  Widget _buildBody(BuildContext context, WidgetRef ref, SettingsEntity s) {
-    final notifier = ref.read(settingsProvider.notifier);
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Personalize', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).textTheme.caption?.color)),
-          const SizedBox(height: 4),
-          Text('Configurações', style: Theme.of(context).textTheme.headlineLarge),
-          const SizedBox(height: 16),
-
-          // Profile card
-          InkWell(
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfilePage())),
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(s.userName.substring(0,1).toUpperCase(), style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Theme.of(context).colorScheme.primary)),
-                    ),
-                    const SizedBox(width: 12),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(s.userName, style: Theme.of(context).textTheme.titleMedium),
-                        Text('Estudante · Nível 1', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).textTheme.caption?.color)),
-                      ],
-                    ),
-                    const Spacer(),
-                    const Icon(Icons.chevron_right_rounded)
-                  ],
-                ),
-              ),
-            ),
-          ),
-
-          // Pomodoro section
-          _sectionHeader(context, 'POMODORO'),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: Column(
-                children: [
-                  _sliderTile(context, 'Tempo de foco', s.focusDurationMinutes, 5, 60, 11, (v) => notifier.updateFocusDuration(v.round())),
-                  const Divider(),
-                  _sliderTile(context, 'Pausa curta', s.shortBreakMinutes, 1, 15, 14, (v) => notifier.updateShortBreak(v.round())),
-                  const Divider(),
-                  _sliderTile(context, 'Pausa longa', s.longBreakMinutes, 5, 30, 5, (v) => notifier.updateLongBreak(v.round())),
-                ],
-              ),
-            ),
-          ),
-
-          _sectionHeader(context, 'CONCENTRAÇÃO'),
-          Card(
-            child: Column(
-              children: [
-                _toggleTile(context, Icons.shield_outlined, Colors.green, 'Bloqueio de apps', s.appBlockingEnabled ? s.blockIntensity.toString().split('.').last : 'Desativado', s.appBlockingEnabled, (v) async {
-                  if (v) {
-                    final granted = await ref.read(appBlockingServiceProvider).requestUsageStatsPermission();
-                    if (!granted) {
-                      showDialog(context: context, builder: (_) => AlertDialog(title: const Text('Permissão necessária'), content: const Text('Permissão de estatísticas de uso necessária')));
-                      return;
-                    }
-                  }
-                  await notifier.toggleAppBlocking(v);
-                }, onTap: s.appBlockingEnabled ? () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AppBlockingPage())) : null),
-                const Divider(),
-                _toggleTile(context, Icons.notifications_off_outlined, Colors.orange, 'Silenciar notificações', 'Durante o foco', s.silenceNotifications, (v) => notifier.toggleSilenceNotifications(v)),
-                const Divider(),
-                _navigationTile(context, Icons.volume_up_outlined, Colors.blue, 'Sons ambiente', s.ambientSound.toString().split('.').last, () => _showAmbientSoundSheet(context, ref, notifier, s)),
-              ],
-            ),
-          ),
-
-          _sectionHeader(context, 'APARÊNCIA'),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: _toggleTile(context, Icons.dark_mode_outlined, Colors.grey, 'Tema escuro', s.themeMode.toString().split('.').last, s.themeMode == AppThemeMode.dark || (s.themeMode == AppThemeMode.system && MediaQuery.platformBrightnessOf(context) == Brightness.dark), (v) => notifier.updateThemeMode(v ? AppThemeMode.dark : AppThemeMode.light)),
-            ),
-          ),
-
-          _sectionHeader(context, 'CONTA'),
-          Card(
-            child: Column(
-              children: [
-                _navigationTile(context, Icons.person_outline, Colors.grey, 'Perfil', '', () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfilePage()))),
-                const Divider(),
-                _navigationTile(context, Icons.cloud_upload_outlined, Colors.grey, 'Backup & sincronização', 'Última: hoje', () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Sincronização em breve! ☁️')))),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 32),
-          Center(child: Text('Honey v1.0 · feito com 🍯', style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Theme.of(context).textTheme.caption?.color))),
-          const SizedBox(height: 32),
-        ],
-      ),
-    );
-  }
-
-  Widget _sectionHeader(BuildContext context, String title) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 24, bottom: 8),
-      child: Text(title.toUpperCase(), style: Theme.of(context).textTheme.labelSmall?.copyWith(letterSpacing: 1.5)),
-    );
-  }
-
-  Widget _sliderTile(BuildContext context, String label, int value, double min, double max, int divisions, ValueChanged<double> onChanged) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          Row(children: [Text(label, style: Theme.of(context).textTheme.bodyMedium), const Spacer(), Text('$value min', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w600))]),
-          Slider(value: value.toDouble(), min: min, max: max, divisions: divisions, onChanged: onChanged),
-        ],
-      ),
-    );
-  }
-
-  Widget _toggleTile(BuildContext context, IconData icon, Color iconColor, String title, String subtitle, bool value, ValueChanged<bool> onChanged, {VoidCallback? onTap}) {
-    return ListTile(
-      leading: Container(width:36, height:36, decoration: BoxDecoration(color: iconColor.withOpacity(0.15), shape: BoxShape.circle), child: Icon(icon, color: iconColor)),
-      title: Text(title),
-      subtitle: Text(subtitle),
-      trailing: onTap == null ? Switch(value: value, onChanged: onChanged, activeColor: Theme.of(context).colorScheme.primary) : const Icon(Icons.chevron_right),
-      onTap: onTap,
-    );
-  }
-
-  Widget _navigationTile(BuildContext context, IconData icon, Color iconColor, String title, String subtitle, VoidCallback onTap) {
-    return ListTile(
-      leading: Container(width:36, height:36, decoration: BoxDecoration(color: iconColor.withOpacity(0.15), shape: BoxShape.circle), child: Icon(icon, color: iconColor)),
-      title: Text(title),
-      subtitle: subtitle.isNotEmpty ? Text(subtitle) : null,
-      trailing: const Icon(Icons.chevron_right),
-      onTap: onTap,
-    );
-  }
-
-  void _showAmbientSoundSheet(BuildContext context, WidgetRef ref, dynamic notifier, SettingsEntity s) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (_) => DraggableScrollableSheet(
-        expand: false,
-        builder: (context, scroll) => Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Container(width:32, height:4, decoration: BoxDecoration(color: Theme.of(context).dividerColor, borderRadius: BorderRadius.circular(4))),
-              const SizedBox(height: 12),
-              Text('Sons ambiente', style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: 12),
-              Row(children: [const Icon(Icons.volume_up), const SizedBox(width:8), const Text('Volume')]),
-              Slider(value: s.ambientVolume, min: 0.0, max: 1.0, onChanged: (v) => notifier.updateAmbientVolume(v)),
-              const SizedBox(height: 12),
-              Expanded(
-                child: ListView(
-                  children: AmbientSound.values.map((sound) {
-                    final label = sound.toString().split('.').last;
-                    final selected = sound == s.ambientSound;
-                    return ListTile(
-                      leading: const Text('🔊'),
-                      title: Text(label),
-                      trailing: selected ? Icon(Icons.check, color: Theme.of(context).colorScheme.primary) : null,
-                      onTap: () {
-                        notifier.updateAmbientSound(sound);
-                        ref.read(ambientSoundServiceProvider).play(sound, s.ambientVolume);
-                        Navigator.pop(context);
-                      },
-                    );
-                  }).toList(),
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

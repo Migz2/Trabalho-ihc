@@ -6,6 +6,7 @@ import 'package:honey/features/focus/presentation/providers/user_provider.dart';
 import 'package:honey/features/pet/data/repositories/pet_repository_impl.dart';
 import 'package:honey/features/pet/domain/entities/pet_action_result_entity.dart';
 import 'package:honey/features/pet/domain/entities/pet_entity.dart';
+import 'package:honey/features/pet/domain/entities/pet_mood_enum.dart';
 import 'package:honey/features/pet/domain/repositories/pet_repository.dart';
 import 'package:honey/features/pet/domain/usecases/apply_focus_reward_usecase.dart';
 import 'package:honey/features/pet/domain/usecases/bathe_pet_usecase.dart';
@@ -85,7 +86,7 @@ class PetNotifier extends AsyncNotifier<PetEntity> {
       hungerDelta: 0,
       hygieneDelta: 0,
       happinessDelta: 0,
-      newMood: pet?.computedMood ?? throw Exception('Pet not loaded'),
+      newMood: PetMood.neutral,
     );
 
     final userCoins = ref.watch(userProvider).value?.coins ?? 0;
@@ -95,7 +96,7 @@ class PetNotifier extends AsyncNotifier<PetEntity> {
 
     if (result.success) {
       // Deduct coins from user
-      ref.read(userProvider.notifier).spendCoins(result.coinsSpent);
+      unawaited(ref.read(userProvider.notifier).spendCoins(result.coinsSpent));
 
       // Update pet
       final updatedPet = pet.copyWith(
@@ -121,7 +122,7 @@ class PetNotifier extends AsyncNotifier<PetEntity> {
       hungerDelta: 0,
       hygieneDelta: 0,
       happinessDelta: 0,
-      newMood: pet?.computedMood ?? throw Exception('Pet not loaded'),
+      newMood: PetMood.neutral,
     );
 
     final userCoins = ref.watch(userProvider).value?.coins ?? 0;
@@ -131,7 +132,7 @@ class PetNotifier extends AsyncNotifier<PetEntity> {
 
     if (result.success) {
       // Deduct coins from user
-      ref.read(userProvider.notifier).spendCoins(result.coinsSpent);
+      unawaited(ref.read(userProvider.notifier).spendCoins(result.coinsSpent));
 
       // Update pet
       final updatedPet = pet.copyWith(
@@ -157,7 +158,7 @@ class PetNotifier extends AsyncNotifier<PetEntity> {
       hungerDelta: 0,
       hygieneDelta: 0,
       happinessDelta: 0,
-      newMood: pet?.computedMood ?? throw Exception('Pet not loaded'),
+      newMood: PetMood.neutral,
     );
 
     final userCoins = ref.watch(userProvider).value?.coins ?? 0;
@@ -167,7 +168,7 @@ class PetNotifier extends AsyncNotifier<PetEntity> {
 
     if (result.success) {
       // Deduct coins from user
-      ref.read(userProvider.notifier).spendCoins(result.coinsSpent);
+      unawaited(ref.read(userProvider.notifier).spendCoins(result.coinsSpent));
 
       // Update pet
       final updatedPet = pet.copyWith(
@@ -192,7 +193,7 @@ class PetNotifier extends AsyncNotifier<PetEntity> {
       hungerDelta: 0,
       hygieneDelta: 0,
       happinessDelta: 0,
-      newMood: pet?.computedMood ?? throw Exception('Pet not loaded'),
+      newMood: PetMood.neutral,
     );
 
     final rewardUseCase = ref.watch(applyFocusRewardUseCaseProvider);
@@ -211,6 +212,16 @@ class PetNotifier extends AsyncNotifier<PetEntity> {
     state = AsyncData(updatedPet);
 
     return result;
+  }
+
+  /// Rename the pet
+  Future<void> renamePet(String newName) async {
+    final pet = state.value;
+    if (pet == null) return;
+
+    final updated = pet.copyWith(name: newName);
+    await _repository.savePet(updated);
+    state = AsyncData(updated);
   }
 
   /// Start periodic decay timer

@@ -1,7 +1,10 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-import 'package:hive/hive.dart';
-import 'settings_model.dart';
+part of 'settings_model.dart';
+
+// **************************************************************************
+// TypeAdapterGenerator
+// **************************************************************************
 
 class SettingsModelAdapter extends TypeAdapter<SettingsModel> {
   @override
@@ -61,52 +64,14 @@ class SettingsModelAdapter extends TypeAdapter<SettingsModel> {
       ..writeByte(12)
       ..write(obj.userAvatar);
   }
-}
-
-class AppThemeModeAdapter extends TypeAdapter<AppThemeMode> {
-  @override
-  final int typeId = 12;
 
   @override
-  AppThemeMode read(BinaryReader reader) {
-    final idx = reader.readByte();
-    return AppThemeMode.values[idx];
-  }
+  int get hashCode => typeId.hashCode;
 
   @override
-  void write(BinaryWriter writer, AppThemeMode obj) {
-    writer.writeByte(obj.index);
-  }
-}
-
-class AmbientSoundAdapter extends TypeAdapter<AmbientSound> {
-  @override
-  final int typeId = 13;
-
-  @override
-  AmbientSound read(BinaryReader reader) {
-    final idx = reader.readByte();
-    return AmbientSound.values[idx];
-  }
-
-  @override
-  void write(BinaryWriter writer, AmbientSound obj) {
-    writer.writeByte(obj.index);
-  }
-}
-
-class BlockIntensityAdapter extends TypeAdapter<BlockIntensity> {
-  @override
-  final int typeId = 14;
-
-  @override
-  BlockIntensity read(BinaryReader reader) {
-    final idx = reader.readByte();
-    return BlockIntensity.values[idx];
-  }
-
-  @override
-  void write(BinaryWriter writer, BlockIntensity obj) {
-    writer.writeByte(obj.index);
-  }
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SettingsModelAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }

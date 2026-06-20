@@ -3,8 +3,6 @@ import 'dart:async';
 import 'package:android_intent_plus/android_intent.dart';
 import 'package:flutter/foundation.dart';
 
-import '../notification_service.dart';
-
 class AppInfo {
   final String appName;
   final String packageName;
@@ -12,10 +10,7 @@ class AppInfo {
 }
 
 class AppBlockingService {
-  final NotificationService _notificationService;
   Timer? _monitorTimer;
-
-  AppBlockingService(this._notificationService);
 
   Future<bool> requestUsageStatsPermission() async {
     // Real implementation should open settings via Intent
@@ -36,22 +31,19 @@ class AppBlockingService {
     return [];
   }
 
+  // NOTE: real foreground-app detection requires a usage-stats query (e.g.
+  // via the app_usage package) which isn't wired up yet — see
+  // FINAL_REPORT.md known limitations. This timer is a placeholder hook for
+  // that future integration.
   void startMonitoring(List<String> blockedPackages, dynamic intensity) {
     _monitorTimer?.cancel();
     _monitorTimer = Timer.periodic(const Duration(seconds: 5), (t) async {
-      // Ideally check foreground app via app_usage package
-      // If detected, call _handleBlockedAppDetected
+      // Ideally check foreground app via app_usage package, then:
+      // _notificationService.showFocusReminder();
+      // if (intensity == 'medium' || intensity == 'intense') {
+      //   await bringHoneyToForeground();
+      // }
     });
-  }
-
-  Future<void> _handleBlockedAppDetected(String package, dynamic intensity) async {
-    // soft: notification only
-    // medium: bring app to foreground via intent + notification
-    // intense: force bring to foreground
-    _notificationService.showFocusReminder();
-    if (intensity == 'medium' || intensity == 'intense') {
-      await bringHoneyToForeground();
-    }
   }
 
   Future<void> bringHoneyToForeground() async {

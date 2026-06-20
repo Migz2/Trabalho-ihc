@@ -12,6 +12,5 @@ final ambientSoundServiceProvider = Provider<AmbientSoundService>((ref) {
 });
 
 final appBlockingServiceProvider = Provider<AppBlockingService>((ref) {
-  final notif = ref.read(notificationServiceProvider);
-  return AppBlockingService(notif);
+  return AppBlockingService();
 });

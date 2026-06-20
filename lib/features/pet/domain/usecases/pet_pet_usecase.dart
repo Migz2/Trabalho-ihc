@@ -28,20 +28,18 @@ class PetPetUseCase {
     }
 
     // Check cooldown
-    if (pet.lastInteraction != null) {
-      final timeSinceLastPet = DateTime.now().difference(pet.lastInteraction ?? DateTime.now());
-      if (timeSinceLastPet.inSeconds < _cooldownSeconds) {
-        final remainingSeconds = _cooldownSeconds - timeSinceLastPet.inSeconds;
-        return PetActionResultEntity(
-          success: false,
-          message: 'Mel precisa de um tempinho... Espera $remainingSeconds segundos! ⏳',
-          coinsSpent: 0,
-          hungerDelta: 0,
-          hygieneDelta: 0,
-          happinessDelta: 0,
-          newMood: pet.computedMood,
-        );
-      }
+    final timeSinceLastPet = DateTime.now().difference(pet.lastInteraction);
+    if (timeSinceLastPet.inSeconds < _cooldownSeconds) {
+      final remainingSeconds = _cooldownSeconds - timeSinceLastPet.inSeconds;
+      return PetActionResultEntity(
+        success: false,
+        message: 'Mel precisa de um tempinho... Espera $remainingSeconds segundos! ⏳',
+        coinsSpent: 0,
+        hungerDelta: 0,
+        hygieneDelta: 0,
+        happinessDelta: 0,
+        newMood: pet.computedMood,
+      );
     }
 
     // Calculate new values (capped at 100)

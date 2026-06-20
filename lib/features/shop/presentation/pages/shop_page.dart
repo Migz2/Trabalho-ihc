@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:honey/core/theme/app_radius.dart';
 import 'package:honey/core/theme/app_spacing.dart';
 import 'package:honey/features/shop/presentation/providers/shop_provider.dart';
 import 'package:honey/features/shop/presentation/widgets/purchase_dialog.dart';
 import 'package:honey/features/shop/presentation/widgets/shop_item_card.dart';
+import 'package:honey/shared/widgets/empty_state_widget.dart';
+import 'package:honey/shared/widgets/honey_button.dart';
+import 'package:honey/shared/widgets/honey_shimmer.dart';
 
 class ShopPage extends ConsumerWidget {
   const ShopPage({Key? key}) : super(key: key);
@@ -27,6 +32,53 @@ class ShopPage extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Coming-soon banner
+                  Container(
+                    width: double.infinity,
+                    margin: const EdgeInsets.only(bottom: AppSpacing.md),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.md,
+                      vertical: AppSpacing.md,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF4A942).withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(AppRadius.lg),
+                      border: Border.all(
+                        color: const Color(0xFFF4A942).withOpacity(0.4),
+                      ),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(
+                          Icons.update_rounded,
+                          color: Color(0xFFF4A942),
+                          size: 20,
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Loja em atualização',
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                'Novos itens e funcionalidades chegam em breve. Os itens disponíveis já podem ser desbloqueados normalmente.',
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme.onSurfaceVariant,
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
                   // Bonuses section
                   if (shopNotifier.equippedItems.isNotEmpty)
                     Column(
@@ -82,14 +134,20 @@ class ShopPage extends ConsumerWidget {
                       crossAxisCount: 3,
                       crossAxisSpacing: AppSpacing.md,
                       mainAxisSpacing: AppSpacing.md,
-                      childAspectRatio: 0.85,
+                      childAspectRatio: 0.72,
                     ),
                     itemCount: items.length,
                     itemBuilder: (context, index) {
                       final item = items[index];
                       return ShopItemCard(
                         item: item,
-                        onTap: () {
+                        onTap: () async {
+                          if (item.owned) {
+                            // Owned items: tapping toggles equip/unequip.
+                            HapticFeedback.lightImpact();
+                            await shopNotifier.equip(item.id);
+                            return;
+                          }
                           showModalBottomSheet(
                             context: context,
                             builder: (context) => PurchaseDialog(
@@ -132,11 +190,29 @@ class ShopPage extends ConsumerWidget {
             ),
           );
         },
-        loading: () => const Center(
-          child: CircularProgressIndicator(),
+        loading: () => Padding(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: AppSpacing.md,
+              mainAxisSpacing: AppSpacing.md,
+              childAspectRatio: 0.72,
+            ),
+            itemCount: 9,
+            itemBuilder: (context, index) =>
+                const HoneyShimmer(width: double.infinity, height: double.infinity),
+          ),
         ),
-        error: (error, stackTrace) => Center(
-          child: Text('Erro ao carregar loja: $error'),
+        error: (error, stackTrace) => EmptyStateWidget(
+          emoji: '🛍️',
+          title: 'Loja indisponível',
+          subtitle: 'Tente novamente em instantes',
+          action: HoneyButton(
+            label: 'Tentar novamente',
+            variant: ButtonVariant.outlined,
+            onPressed: () => ref.invalidate(shopProvider),
+          ),
         ),
       ),
     );

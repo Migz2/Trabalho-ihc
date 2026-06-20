@@ -1,8 +1,10 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-import 'package:hive/hive.dart';
-import 'statistics_model.dart';
-import 'achievement_model.dart';
+part of 'statistics_model.dart';
+
+// **************************************************************************
+// TypeAdapterGenerator
+// **************************************************************************
 
 class StatisticsModelAdapter extends TypeAdapter<StatisticsModel> {
   @override
@@ -41,4 +43,14 @@ class StatisticsModelAdapter extends TypeAdapter<StatisticsModel> {
       ..writeByte(5)
       ..write(obj.achievements);
   }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is StatisticsModelAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }

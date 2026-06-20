@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_radius.dart';
+import '../../core/utils/animation_constants.dart';
 
 /// Widget to display coin amount in Honey app
-/// Shows the honey emoji (🍯) with coin count
-class CoinDisplay extends StatelessWidget {
+/// Shows the honey emoji (🍯) with coin count.
+/// Animates with a count-up + scale pulse whenever [coins] increases.
+class CoinDisplay extends StatefulWidget {
   final int coins;
   final TextStyle? textStyle;
   final MainAxisAlignment alignment;
@@ -19,42 +21,102 @@ class CoinDisplay extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final textStyle = this.textStyle ?? theme.textTheme.labelLarge!;
+  State<CoinDisplay> createState() => _CoinDisplayState();
+}
 
-    final content = Row(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: alignment,
-      children: [
-        Text(
-          '🍯',
-          style: const TextStyle(fontSize: 20),
-        ),
-        const SizedBox(width: AppSpacing.xs),
-        Text(
-          coins.toString(),
-          style: textStyle,
-        ),
-      ],
+class _CoinDisplayState extends State<CoinDisplay>
+    with SingleTickerProviderStateMixin {
+  late int _previousCoins;
+  late final AnimationController _pulseController;
+  late final Animation<double> _pulseAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _previousCoins = widget.coins;
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: AnimationDurations.fast,
+    );
+    _pulseAnimation = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 1.0, end: 1.2), weight: 1),
+      TweenSequenceItem(tween: Tween(begin: 1.2, end: 1.0), weight: 1),
+    ]).animate(CurvedAnimation(
+      parent: _pulseController,
+      curve: AnimationCurves.standard,
+    ));
+  }
+
+  @override
+  void didUpdateWidget(CoinDisplay oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.coins != oldWidget.coins) {
+      _previousCoins = oldWidget.coins;
+      if (widget.coins > oldWidget.coins) {
+        _pulseController.forward(from: 0);
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return RepaintBoundary(child: _buildCoinDisplay(context));
+  }
+
+  Widget _buildCoinDisplay(BuildContext context) {
+    final theme = Theme.of(context);
+    final textStyle = widget.textStyle ?? theme.textTheme.labelLarge!;
+
+    final content = ScaleTransition(
+      scale: _pulseAnimation,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: widget.alignment,
+        children: [
+          const Text(
+            '🍯',
+            style: TextStyle(fontSize: 20),
+          ),
+          const SizedBox(width: AppSpacing.xs),
+          TweenAnimationBuilder<int>(
+            tween: IntTween(begin: _previousCoins, end: widget.coins),
+            duration: AnimationDurations.crawl,
+            builder: (context, value, _) {
+              return Text(
+                value.toString(),
+                style: textStyle,
+              );
+            },
+          ),
+        ],
+      ),
     );
 
-    if (!showBackground) {
+    if (!widget.showBackground) {
       return content;
     }
 
     return Container(
       padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.md,
-        vertical: AppSpacing.sm,
+        horizontal: 14,
+        vertical: 8,
       ),
       decoration: BoxDecoration(
-        color: theme.colorScheme.primaryContainer,
-        borderRadius: AppRadius.radiusMd,
-        border: Border.all(
-          color: theme.colorScheme.primary,
-          width: 1,
-        ),
+        color: theme.colorScheme.surfaceVariant,
+        borderRadius: AppRadius.radiusFull,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: content,
     );

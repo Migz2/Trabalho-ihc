@@ -1,40 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/services/hive_service.dart';
+import '../../core/utils/animation_constants.dart';
 import '../../features/focus/presentation/pages/focus_page.dart';
 import '../../features/onboarding/presentation/pages/onboarding_page.dart';
 import '../../features/pet/presentation/pages/pet_page.dart';
+import '../../features/settings/presentation/pages/settings_page.dart';
 import '../../features/shop/presentation/pages/shop_page.dart';
+import '../../features/statistics/presentation/pages/statistics_page.dart';
 import '../widgets/home_shell.dart';
 import 'app_routes.dart';
 
-// Placeholder pages for remaining tabs
-class HistoryPage extends StatelessWidget {
-  const HistoryPage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Histórico')),
-      body: const Center(
-        child: Text('Página de Histórico'),
-      ),
-    );
-  }
-}
-
-class SettingsPage extends StatelessWidget {
-  const SettingsPage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Ajustes')),
-      body: const Center(
-        child: Text('Página de Ajustes'),
-      ),
-    );
-  }
+/// Wraps a page with the app's standard fade + slide transition.
+CustomTransitionPage<void> _buildPageWithTransition({
+  required Widget child,
+  required GoRouterState state,
+}) {
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    child: child,
+    transitionDuration: AnimationDurations.normal,
+    reverseTransitionDuration: AnimationDurations.normal,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      return FadeTransition(
+        opacity: CurvedAnimation(
+          parent: animation,
+          curve: AnimationCurves.enter,
+        ),
+        child: SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0.02, 0),
+            end: Offset.zero,
+          ).animate(CurvedAnimation(
+            parent: animation,
+            curve: AnimationCurves.enter,
+          )),
+          child: child,
+        ),
+      );
+    },
+  );
 }
 
 /// Configure GoRouter for Honey app
@@ -61,7 +66,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.onboarding,
       name: 'onboarding',
-      builder: (context, state) => const OnboardingPage(),
+      pageBuilder: (context, state) => _buildPageWithTransition(
+        child: const OnboardingPage(),
+        state: state,
+      ),
     ),
 
     // Shell route with bottom navigation
@@ -71,22 +79,42 @@ final appRouter = GoRouter(
         GoRoute(
           path: AppRoutes.focus,
           name: 'focus',
-          builder: (context, state) => const FocusPage(),
+          pageBuilder: (context, state) => _buildPageWithTransition(
+            child: const FocusPage(),
+            state: state,
+          ),
         ),
         GoRoute(
           path: AppRoutes.pet,
           name: 'pet',
-          builder: (context, state) => const PetPage(),
+          pageBuilder: (context, state) => _buildPageWithTransition(
+            child: const PetPage(),
+            state: state,
+          ),
         ),
         GoRoute(
           path: AppRoutes.shop,
           name: 'shop',
-          builder: (context, state) => const ShopPage(),
+          pageBuilder: (context, state) => _buildPageWithTransition(
+            child: const ShopPage(),
+            state: state,
+          ),
+        ),
+        GoRoute(
+          path: AppRoutes.history,
+          name: 'history',
+          pageBuilder: (context, state) => _buildPageWithTransition(
+            child: const StatisticsPage(),
+            state: state,
+          ),
         ),
         GoRoute(
           path: AppRoutes.settings,
           name: 'settings',
-          builder: (context, state) => const SettingsPage(),
+          pageBuilder: (context, state) => _buildPageWithTransition(
+            child: const SettingsPage(),
+            state: state,
+          ),
         ),
       ],
     ),

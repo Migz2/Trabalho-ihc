@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
 
 /// Extensions for BuildContext
 extension ContextExtensions on BuildContext {
@@ -10,6 +11,36 @@ extension ContextExtensions on BuildContext {
 
   /// Get current text theme
   TextTheme get textTheme => theme.textTheme;
+
+  /// Short alias for colorScheme
+  ColorScheme get colors => theme.colorScheme;
+
+  /// Short alias for textTheme
+  TextTheme get texts => theme.textTheme;
+
+  /// Whether the *resolved* app theme is dark (respects an explicit
+  /// light/dark override in settings, not just the OS brightness).
+  bool get isDark => theme.brightness == Brightness.dark;
+
+  /// Theme-aware surface color (card backgrounds, etc).
+  Color get surface => isDark ? AppColors.darkSurface : AppColors.lightSurface;
+
+  /// Theme-aware secondary surface color (e.g. for variant cards).
+  Color get surfaceVariant =>
+      isDark ? AppColors.darkSurfaceVariant : AppColors.lightSurfaceVariant;
+
+  /// Theme-aware divider color.
+  Color get dividerColor => isDark ? AppColors.darkDivider : AppColors.lightDivider;
+
+  /// Theme-aware primary text color.
+  Color get textPrimary => isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+
+  /// Theme-aware secondary text color.
+  Color get textSecondary =>
+      isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+
+  /// Theme-aware hint/placeholder text color.
+  Color get textHint => isDark ? AppColors.darkTextHint : AppColors.lightTextHint;
 
   /// Get device size
   Size get screenSize => MediaQuery.of(this).size;

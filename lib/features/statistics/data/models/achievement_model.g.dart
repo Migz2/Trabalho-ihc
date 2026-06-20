@@ -1,7 +1,10 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-import 'package:hive/hive.dart';
-import 'achievement_model.dart';
+part of 'achievement_model.dart';
+
+// **************************************************************************
+// TypeAdapterGenerator
+// **************************************************************************
 
 class AchievementModelAdapter extends TypeAdapter<AchievementModel> {
   @override
@@ -43,20 +46,14 @@ class AchievementModelAdapter extends TypeAdapter<AchievementModel> {
       ..writeByte(6)
       ..write(obj.unlockedAt);
   }
-}
-
-class AchievementIdAdapter extends TypeAdapter<AchievementId> {
-  @override
-  final int typeId = 9;
 
   @override
-  AchievementId read(BinaryReader reader) {
-    final idx = reader.readByte();
-    return AchievementId.values[idx];
-  }
+  int get hashCode => typeId.hashCode;
 
   @override
-  void write(BinaryWriter writer, AchievementId obj) {
-    writer.writeByte(obj.index);
-  }
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AchievementModelAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }

@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/utils/animation_constants.dart';
 
-/// Primary button widget for Honey app
-class HoneyButton extends StatelessWidget {
+enum ButtonVariant { filled, outlined, text }
+
+/// Primary button widget for Honey app.
+/// Adds a tap-scale + haptic micro-interaction on top of the base button.
+class HoneyButton extends StatefulWidget {
   final String label;
   final VoidCallback? onPressed;
   final bool isLoading;
@@ -29,80 +34,96 @@ class HoneyButton extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final isPressed = onPressed != null && isEnabled && !isLoading;
+  State<HoneyButton> createState() => _HoneyButtonState();
+}
 
-    Widget child = _buildContent();
+class _HoneyButtonState extends State<HoneyButton> {
+  bool _pressed = false;
 
-    if (variant == ButtonVariant.filled) {
-      return SizedBox(
-        width: width,
-        height: height,
-        child: FilledButton(
-          onPressed: isPressed ? onPressed : null,
-          child: child,
-        ),
-      );
-    } else if (variant == ButtonVariant.outlined) {
-      return SizedBox(
-        width: width,
-        height: height,
-        child: OutlinedButton(
-          onPressed: isPressed ? onPressed : null,
-          child: child,
-        ),
-      );
-    } else {
-      return SizedBox(
-        width: width,
-        height: height,
-        child: TextButton(
-          onPressed: isPressed ? onPressed : null,
-          child: child,
-        ),
-      );
-    }
+  bool get _isActive =>
+      widget.onPressed != null && widget.isEnabled && !widget.isLoading;
+
+  void _setPressed(bool pressed) {
+    if (!_isActive) return;
+    setState(() => _pressed = pressed);
   }
 
-  Widget _buildContent() {
-    if (isLoading) {
+  @override
+  Widget build(BuildContext context) {
+    final child = _buildContent(context);
+
+    Widget button;
+    switch (widget.variant) {
+      case ButtonVariant.filled:
+        button = FilledButton(
+          onPressed: _isActive ? widget.onPressed : null,
+          child: child,
+        );
+        break;
+      case ButtonVariant.outlined:
+        button = OutlinedButton(
+          onPressed: _isActive ? widget.onPressed : null,
+          child: child,
+        );
+        break;
+      case ButtonVariant.text:
+        button = TextButton(
+          onPressed: _isActive ? widget.onPressed : null,
+          child: child,
+        );
+        break;
+    }
+
+    return GestureDetector(
+      onTapDown: (_) => _setPressed(true),
+      onTapUp: (_) {
+        _setPressed(false);
+        if (_isActive) HapticFeedback.lightImpact();
+      },
+      onTapCancel: () => _setPressed(false),
+      child: AnimatedScale(
+        scale: _pressed ? 0.97 : 1.0,
+        duration: AnimationDurations.micro,
+        curve: AnimationCurves.standard,
+        child: SizedBox(
+          width: widget.width,
+          height: widget.height,
+          child: button,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContent(BuildContext context) {
+    if (widget.isLoading) {
+      final spinnerColor = widget.variant == ButtonVariant.filled
+          ? Colors.white
+          : Theme.of(context).colorScheme.primary;
       return SizedBox(
         height: 24,
         width: 24,
         child: CircularProgressIndicator(
           strokeWidth: 2,
-          valueColor: AlwaysStoppedAnimation<Color>(
-            variant == ButtonVariant.filled
-                ? Colors.white
-                : Theme.of(
-                    // ignore: invalid_use_of_protected_member
-                    _scaffoldMessengerKey.currentContext!)
-                  .primaryColor,
-          ),
+          valueColor: AlwaysStoppedAnimation<Color>(spinnerColor),
         ),
       );
     }
 
-    if (isIconOnly && icon != null) {
-      return Icon(icon);
+    if (widget.isIconOnly && widget.icon != null) {
+      return Icon(widget.icon);
     }
 
-    if (icon != null) {
+    if (widget.icon != null) {
       return Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon),
+          Icon(widget.icon),
           const SizedBox(width: AppSpacing.sm),
-          Text(label),
+          Text(widget.label),
         ],
       );
     }
 
-    return Text(label);
+    return Text(widget.label);
   }
 }
-
-enum ButtonVariant { filled, outlined, text }
-
-// Workaround for getting context in _buildContent
-final _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();

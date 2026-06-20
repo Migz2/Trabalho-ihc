@@ -1,145 +1,323 @@
-# 🍯 Honey — Productivity App with Pomodoro Timer & Virtual Pet
+# 🍯 Honey — App de Produtividade com Timer Pomodoro & Pet Virtual
 
-A beautiful Flutter app designed to boost productivity through Pomodoro focus sessions while caring for a virtual pet companion.
+Um app Flutter que estimula a produtividade através de sessões de foco
+(técnica Pomodoro) enquanto o usuário cuida de um pet virtual — quanto mais
+ciclos de foco completados, mais feliz e desenvolvido o pet fica.
 
-## 📋 About
+Projeto desenvolvido para a disciplina de **IHC (Interação Humano-Computador)**.
 
-Honey combines the effectiveness of the **Pomodoro Technique** with the engagement of a **virtual pet system**. Users earn coins through focused work sessions, which they can use to care for and customize their pet in an integrated shop.
+## 📋 Sobre
 
-### Key Features
-- ⏱️ **Pomodoro Timer** with customizable durations
-- 🐾 **Virtual Pet System** with hunger, hygiene, and happiness stats
-- 🏪 **Shop System** for pet accessories and customizations
-- 📊 **Statistics Dashboard** tracking focus sessions and productivity
-- ⚙️ **Settings Panel** with notifications and preferences
-- 🌓 **Dark Mode** with warm, honey-themed colors
-- 🔔 **Local Notifications** for session reminders
+Honey combina a técnica **Pomodoro** com um sistema de **pet virtual**. O
+usuário ganha moedas (🍯) completando ciclos de foco, e usa essas moedas para
+alimentar, cuidar e equipar acessórios no seu pet através de uma loja
+integrada.
+
+### Funcionalidades
+
+- ⏱️ **Timer Pomodoro** com duração de foco/pausas customizável, incluindo
+  ajuste rápido (+/- 5 min) direto na tela de Foco enquanto o timer está parado
+- 🐾 **Pet virtual** com fome, higiene, felicidade e energia, nome
+  personalizável (no onboarding ou depois em Configurações), e fallback
+  desenhado 100% em Flutter caso a arte do pet não esteja disponível
+- 🏪 **Loja** com 7 itens (acessórios, brinquedos, fundos) que dão bônus de
+  felicidade/moedas/redução de decaimento ao serem equipados
+- 📊 **Estatísticas** com streak atual/recorde, horas totais focadas, gráfico
+  semanal e conquistas desbloqueáveis
+- ⚙️ **Configurações** completas: duração de foco/pausas, tema claro/escuro,
+  som ambiente, bloqueio de apps (parcial — ver limitações), notificações,
+  perfil e renomear o pet
+- 🌓 **Modo escuro** com paleta quente baseada em tons de mel
+- 🔔 **Notificações locais** para lembretes de sessão
+- 🎉 Overlays de celebração ao completar ciclos, subir de nível e desbloquear
+  conquistas
 
 ---
 
-## 🛠 Tech Stack
+## 🛠 Stack Tecnológica
 
-### Framework & Language
-- **Flutter** 3.16+ with Null Safety
+### Framework & Linguagem
+- **Flutter** 3.16+ com Null Safety
 - **Dart** 3.0+
 
-### State Management
-- **Riverpod** with code generation for type-safe providers
+### Gerenciamento de Estado
+- **Riverpod** (`flutter_riverpod` + `riverpod_annotation`/`riverpod_generator`)
 
-### Navigation
-- **GoRouter** for declarative routing
+### Navegação
+- **GoRouter** (rotas declarativas + `ShellRoute` para a bottom navigation)
 
-### Persistence
-- **Hive** for fast, offline-first local storage
+### Persistência
+- **Hive** (armazenamento local rápido, offline-first)
 
 ### UI & Design
 - **Google Fonts** (Playfair Display + DM Sans)
-- **Material Design 3** with custom theme
-- **Flutter Animate** & **Lottie** for animations
+- **Material Design 3** com tema próprio (claro/escuro)
+- **flutter_animate** para animações e transições
 
-### Additional Features
-- **FL Chart** for statistics visualization
-- **AudioPlayers** for sound effects
-- **Flutter Local Notifications** for reminders
-- **Permission Handler** for permissions
-- **App Usage** for device tracking (statistics)
+### Outros
+- **fl_chart** — gráfico semanal nas Estatísticas
+- **audioplayers** — efeitos sonoros
+- **flutter_local_notifications** — lembretes
+- **permission_handler** / **app_usage** — bloqueio de apps (parcial)
 
 ---
 
-## 📦 Getting Started
+## 📦 Como executar
 
-### Prerequisites
-- Flutter SDK 3.16.0 or later
-- Dart 3.0 or later
-- Android Studio / Xcode (for emulator)
+### Pré-requisitos
+- [Flutter SDK](https://docs.flutter.dev/get-started/install) 3.16 ou mais recente
+- Dart 3.0+ (instalado junto com o Flutter)
+- Um editor (VS Code, Android Studio ou IntelliJ com plugin Flutter)
+- Para rodar em celular Android: Android Studio (ou só as platform-tools/ADB)
+- Para rodar em celular iOS: macOS + Xcode
 
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/Migz2/Trabalho-ihc.git
-   cd Trabalho-ihc
-   ```
-
-2. **Install dependencies**
-   ```bash
-   flutter pub get
-   ```
-
-3. **Run the app**
-   ```bash
-   flutter run
-   ```
-
-### Development Commands
+Verifique se o ambiente está pronto com:
 
 ```bash
-# Check code quality
+flutter doctor
+```
+
+### 1. Clonar e instalar dependências
+
+```bash
+git clone https://github.com/Migz2/Trabalho-ihc.git
+cd Trabalho-ihc
+flutter pub get
+```
+
+### 2. Ver quais dispositivos estão disponíveis
+
+```bash
+flutter devices
+```
+
+Esse comando lista tudo que o Flutter já reconhece: o próprio PC (Linux,
+Windows ou macOS como "desktop"), emuladores abertos, navegadores e
+celulares conectados.
+
+### 3. Rodar no PC (desktop)
+
+O projeto já tem suporte a desktop habilitado (pastas `linux/`, `windows/` e
+`macos/` no repositório). Para rodar direto no computador, sem emulador nem
+celular:
+
+```bash
+# Linux
+flutter run -d linux
+
+# Windows
+flutter run -d windows
+
+# macOS
+flutter run -d macos
+```
+
+Se só houver um dispositivo conectado (por exemplo, só o desktop), basta
+`flutter run` sem o `-d`.
+
+> No Linux, certifique-se de ter as dependências de desenvolvimento GTK
+> instaladas (`flutter doctor` avisa se faltar algo).
+
+### 4. Rodar no navegador (web)
+
+```bash
+flutter run -d chrome
+```
+
+> Algumas funcionalidades dependentes de plugins nativos (notificações
+> locais, bloqueio de apps) têm comportamento limitado ou nulo na web.
+
+### 5. Rodar em um celular Android conectado
+
+**Via cabo USB:**
+
+1. No celular, ative o **Modo Desenvolvedor**: Configurações → Sobre o
+   telefone → toque 7x em "Número da versão (build)".
+2. Em Configurações → Opções do desenvolvedor, ative **Depuração USB**.
+3. Conecte o celular ao PC via cabo USB e autorize a depuração no popup que
+   aparece na tela do celular.
+4. Confirme que o aparelho foi reconhecido:
+   ```bash
+   flutter devices
+   ```
+5. Rode o app apontando para o ID do dispositivo listado:
+   ```bash
+   flutter run -d <device_id>
+   ```
+
+**Via Wi-Fi (depuração sem fio, Android 11+):**
+
+1. Ative as Opções do desenvolvedor e a **Depuração sem fio** no celular.
+2. No celular, toque em "Parear dispositivo com código de pareamento" e
+   anote o código/IP:porta exibidos.
+3. No PC:
+   ```bash
+   adb pair <ip>:<porta-de-pareamento>
+   # digite o código de 6 dígitos mostrado no celular
+   adb connect <ip>:<porta-de-conexão>
+   flutter devices
+   flutter run -d <device_id>
+   ```
+
+### 6. Rodar em um iPhone conectado (requer macOS + Xcode)
+
+1. Conecte o iPhone via cabo e confie no computador quando solicitado.
+2. Abra `ios/Runner.xcworkspace` no Xcode pelo menos uma vez para configurar
+   o time de assinatura (Signing & Capabilities).
+3. ```bash
+   flutter devices
+   flutter run -d <device_id>
+   ```
+
+### 7. Gerar um instalável (APK) para instalar manualmente no Android
+
+Útil quando não dá para deixar o cabo conectado ou para enviar o app a
+outra pessoa testar:
+
+```bash
+flutter build apk --debug
+# gera build/app/outputs/flutter-apk/app-debug.apk
+```
+
+Transfira o `.apk` para o celular (cabo, e-mail, Drive, etc.) e instale
+manualmente — pode ser necessário permitir "instalar de fontes
+desconhecidas" nas configurações do Android.
+
+Para uma build de release real (assinada), veja a seção de **Limitações
+conhecidas / próximos passos** no [`FINAL_REPORT.md`](FINAL_REPORT.md) — o
+`applicationId` ainda é o de exemplo (`com.example.honey_app`) e não há
+`keystore` de assinatura configurado.
+
+### Comandos úteis de desenvolvimento
+
+```bash
+# Verificar qualidade do código (deve dar 0 erros)
 flutter analyze
 
-# Format code
+# Formatar código
 dart format lib/
 
-# Run tests
+# Rodar os testes
 flutter test
 
-# Build release
-flutter build apk
+# Limpar build cache (útil se algo não compilar após mudar de branch)
+flutter clean && flutter pub get
 ```
 
 ---
 
-## 📁 Project Structure
+## 📁 Estrutura do Projeto
 
 ```
 lib/
-├── core/                 # Business logic & reusables
-│   ├── constants/       # App constants & Hive keys
-│   ├── theme/           # Design system (colors, typography)
-│   ├── services/        # Hive initialization & CRUD
-│   ├── errors/          # Exception definitions
-│   ├── utils/           # Utility functions
-│   └── extensions/      # Context & String helpers
+├── main.dart             # bootstrap: Hive, notificações, orientação
+├── app.dart              # MaterialApp.router + tema
 │
-├── shared/              # Shared across features
-│   ├── widgets/         # Reusable UI components
-│   └── navigation/      # GoRouter configuration
+├── core/                 # infraestrutura compartilhada
+│   ├── constants/        # chaves Hive, constantes globais
+│   ├── theme/            # cores, tipografia, espaçamento, raio
+│   ├── services/         # Hive, timer, decay do pet, notificações, DI
+│   ├── errors/            # exceptions tipadas
+│   ├── utils/             # helpers (datas, animação)
+│   └── extensions/        # context_extensions (cores tema-aware), etc.
 │
-├── features/            # Feature modules (Clean Architecture)
-│   ├── focus/           # Pomodoro timer feature
-│   ├── pet/             # Virtual pet system
-│   ├── shop/            # Item shop & purchases
-│   ├── statistics/      # Session analytics
-│   ├── settings/        # App preferences
-│   └── onboarding/      # Initial setup flow
+├── shared/                # compartilhado entre features
+│   ├── widgets/           # HoneyButton, CoinDisplay, EmptyStateWidget, HomeShell...
+│   └── navigation/         # GoRouter (rotas + shell)
 │
-└── assets/              # Images, animations, fonts
+├── features/               # cada feature em Clean Architecture
+│   ├── focus/              # timer Pomodoro, sessões, usuário (moedas/streak)
+│   ├── pet/                # Mel: estado, decay, ações, loja-bônus
+│   ├── shop/                # catálogo, compra, equipar
+│   ├── statistics/          # streak, horas, conquistas, gráfico
+│   ├── settings/             # preferências, bloqueio de apps, perfil
+│   └── onboarding/           # 3 telas de introdução + nome do pet
+│
+└── assets/                   # imagens, animações
 ```
+
+Cada feature segue `domain/` (entities, usecases, contratos de repositório)
+→ `data/` (models Hive + implementação dos repositórios) → `presentation/`
+(providers Riverpod + páginas + widgets). Detalhes de arquitetura, schema
+Hive e fluxo de dados completo estão em [`FINAL_REPORT.md`](FINAL_REPORT.md).
 
 ---
 
 ## 🎨 Design System
 
-### Color Palette
-- **Primary:** #C17F3E (honey gold) / #D4924E (dark)
-- **Background:** #FAF7F2 (light cream) / #1C1410 (dark warm)
-- **Accent:** #F4A942 (soft orange)
+### Paleta de cores
+- **Primária:** `#C17F3E` (dourado mel) / `#D4924E` (modo escuro)
+- **Fundo:** `#FAF7F2` (creme claro) / `#1C1410` (escuro quente)
+- **Destaque:** `#F4A942` (laranja suave)
 
-### Typography
-- **Display:** Playfair Display (elegant headlines)
-- **Body:** DM Sans (readable, modern text)
+### Tipografia
+- **Display/headlines:** Playfair Display
+- **Corpo de texto:** DM Sans
 
-### Spacing Scale
+### Espaçamento
 `4px, 8px, 16px, 24px, 32px, 48px`
 
-### Border Radius
+### Raio de borda
 `8px, 12px, 16px, 24px, 100px (circular)`
 
 ---
 
-## 🧪 Testing
+## 🔄 Navegação
 
-Currently in **Phase 1** (Foundation). Test data and unit tests will be added in Phase 2.
+**Fluxo raiz:**
+1. App verifica em Hive se o onboarding já foi concluído.
+2. Se não → `/onboarding` (3 telas, incluindo escolha do nome do pet).
+3. Se sim → `/focus` (aba padrão).
+
+**Bottom navigation (5 abas):**
+- 🎯 **Foco** (`/focus`) — timer Pomodoro + preview do pet
+- 🐾 **Pet** (`/pet`) — tela completa do pet (atributos, ações)
+- 🛍️ **Loja** (`/shop`) — catálogo de itens
+- 📊 **Histórico** (`/history`) — estatísticas e conquistas
+- ⚙️ **Ajustes** (`/settings`) — preferências e perfil
+
+---
+
+## ✅ Status atual
+
+O app está **funcionalmente completo**: todas as features descritas acima
+estão implementadas e integradas (timer, pet, loja, estatísticas,
+configurações e onboarding). `flutter analyze` roda com **0 erros** e
+`flutter test` passa.
+
+Para o histórico detalhado de cada fase de desenvolvimento (o que foi feito
+e quando), veja [`PROGRESS.md`](PROGRESS.md).
+
+### Limitações conhecidas
+
+- **Bloqueio de apps é parcial** — a listagem de apps instalados e a
+  detecção do app em primeiro plano ainda são placeholders; a tela existe e
+  salva preferências, mas não bloqueia de fato.
+- **`applicationId` de exemplo** (`com.example.honey_app`) — trocar antes de
+  publicar.
+- **Sem arte real do pet** — `assets/images/pet/` só tem `.gitkeep`; o app
+  usa um fallback desenhado em Flutter (`CustomPainter`) e emojis enquanto a
+  arte definitiva não é entregue.
+- **Sincronização parcial de duração do timer**: ajustar a duração pelos
+  botões +/- da tela de Foco atualiza o timer imediatamente; ajustar pelos
+  sliders de Configurações só é refletido na próxima vez que o timer for
+  reiniciado naquela fase.
+
+Lista completa e mais detalhada em [`FINAL_REPORT.md`](FINAL_REPORT.md).
+
+---
+
+## 📱 Requisitos de Dispositivo
+
+- **Android 5.0+** (API 21)
+- **iOS 11.0+**
+- Mínimo de 50MB de armazenamento livre
+- Também roda como app de **desktop** (Linux/Windows/macOS) e **web**, com
+  algumas funcionalidades nativas limitadas nessas plataformas
+
+---
+
+## 🧪 Testes
 
 ```bash
 flutter test
@@ -147,101 +325,19 @@ flutter test
 
 ---
 
-## 📝 Architecture
+## 📄 Licença
 
-### Clean Architecture + Feature-Driven Design
+MIT License — veja o arquivo LICENSE.
 
-Each feature follows:
-```
-feature/
-├── data/
-│   ├── datasources/    # API/Hive calls
-│   ├── models/         # JSON serialization
-│   └── repositories/   # Data access layer
-├── domain/
-│   ├── entities/       # Business models
-│   ├── repositories/   # Abstract contracts
-│   └── usecases/       # Business logic
-└── presentation/
-    ├── pages/          # Full screens
-    ├── widgets/        # UI components
-    └── providers/      # Riverpod state
-```
+## 👥 Contribuidores
+
+- **Miguel** — Desenvolvedor (Projeto IHC)
+
+## 📞 Suporte
+
+Para problemas ou sugestões, abra uma issue no GitHub.
 
 ---
 
-## 🔄 Navigation
-
-**Root Flow:**
-1. App checks onboarding status in Hive
-2. If not completed → `/onboarding`
-3. Else → `/focus` (default tab)
-
-**Bottom Navigation (4 Tabs):**
-- 🎯 **Foco** (`/focus`) — Pomodoro timer
-- 🐾 **Pet** (`/pet`) — Virtual pet display
-- 📊 **Histórico** (`/history`) — Session analytics
-- ⚙️ **Ajustes** (`/settings`) — Preferences
-
----
-
-## 🚀 Roadmap
-
-### Phase 1: ✅ Foundation (Current)
-- [x] Design system implementation
-- [x] Navigation infrastructure
-- [x] Data persistence layer
-- [x] Base UI widgets
-- [x] Theme (light & dark mode)
-
-### Phase 2: Feature Implementation
-- [ ] Focus/Timer feature with sessions
-- [ ] Pet entity & stats system
-- [ ] Shop with items & purchases
-- [ ] Statistics dashboard
-- [ ] Settings & notifications
-- [ ] Complete onboarding flow
-
-### Phase 3: Polish & Release
-- [ ] Animation refinements
-- [ ] Sound effects & haptics
-- [ ] Performance optimization
-- [ ] Beta testing
-- [ ] Release on Google Play Store
-
----
-
-## 📱 Device Requirements
-
-- **Android 5.0+** (API 21)
-- **iOS 11.0+**
-- Minimum 50MB free storage
-
----
-
-## 🐛 Known Issues
-
-None reported in Phase 1.
-
----
-
-## 📄 License
-
-MIT License — See LICENSE file
-
----
-
-## 👥 Contributors
-
-- **Miguel** — Lead Developer (IHC Project)
-
----
-
-## 📞 Support
-
-For issues and feature requests, please open an issue on GitHub.
-
----
-
-**Made with 🍯 by Miguel**  
-*Last updated: June 11, 2026*
+**Feito com 🍯 por Miguel**
+*Última atualização: 20 de junho de 2026*

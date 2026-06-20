@@ -24,6 +24,9 @@ class AppColors {
   
   static const Color lightCoinColor = Color(0xFFC17F3E); // Dourado
   static const Color lightDivider = Color(0xFFEDE5D8); // Divisor claro
+  static const Color lightPetCardBackground = Color(0xFFF5EDE0); // Bege quente
+  static const Color lightShimmerBase = Color(0xFFEDE5D8);
+  static const Color lightShimmerHighlight = Color(0xFFFAF7F2);
 
   // Dark mode colors (tons quentes escuros)
   static const Color darkBackground = Color(0xFF1C1410); // Preto quente
@@ -46,6 +49,9 @@ class AppColors {
   
   static const Color darkCoinColor = Color(0xFFD4924E); // Dourado escuro
   static const Color darkDivider = Color(0xFF4A3A2F); // Divisor escuro
+  static const Color darkPetCardBackground = Color(0xFF3D2E22); // Bege escuro quente
+  static const Color darkShimmerBase = Color(0xFF2A1F18);
+  static const Color darkShimmerHighlight = Color(0xFF3D2E22);
 
   // Static method to get colors based on brightness
   static Color getBackgroundColor(Brightness brightness) {

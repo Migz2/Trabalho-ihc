@@ -1,10 +1,9 @@
 import 'package:hive/hive.dart';
 import 'package:honey/features/pet/domain/entities/pet_entity.dart';
-import 'package:honey/features/pet/domain/entities/pet_mood_enum.dart';
 
 part 'pet_model.g.dart';
 
-@HiveType(typeId: 4)
+@HiveType(typeId: 0)
 class PetModel {
   @HiveField(0)
   final String id;

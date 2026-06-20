@@ -4,12 +4,9 @@ import 'package:honey/core/errors/app_exceptions.dart';
 import 'package:honey/core/services/hive_service.dart';
 import 'package:honey/features/pet/data/models/pet_model.dart';
 import 'package:honey/features/pet/domain/entities/pet_entity.dart';
-import 'package:honey/features/pet/domain/entities/pet_mood_enum.dart';
 import 'package:honey/features/pet/domain/repositories/pet_repository.dart';
 
 class PetRepositoryImpl implements PetRepository {
-  static const String _tag = 'PetRepositoryImpl';
-
   @override
   Future<PetEntity?> getPet() async {
     try {

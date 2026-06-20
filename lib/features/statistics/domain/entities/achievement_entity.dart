@@ -21,7 +21,7 @@ class AchievementEntity {
   final bool unlocked;
   final DateTime? unlockedAt;
 
-  AchievementEntity({
+  const AchievementEntity({
     required this.id,
     required this.title,
     required this.description,

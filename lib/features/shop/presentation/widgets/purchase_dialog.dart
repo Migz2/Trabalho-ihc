@@ -25,10 +25,11 @@ class PurchaseDialog extends StatelessWidget {
       minChildSize: 0.4,
       maxChildSize: 0.9,
       builder: (context, scrollController) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
         return Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
+          decoration: BoxDecoration(
+            color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+            borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(24),
               topRight: Radius.circular(24),
             ),

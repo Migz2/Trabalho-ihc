@@ -76,4 +76,28 @@ class TimerStateEntity {
     if (totalSeconds == 0) return 0.0;
     return 1.0 - (remainingSeconds / totalSeconds);
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is TimerStateEntity &&
+        other.phase == phase &&
+        other.remainingSeconds == remainingSeconds &&
+        other.currentCycle == currentCycle &&
+        other.totalCycles == totalCycles &&
+        other.isRunning == isRunning &&
+        other.isPaused == isPaused &&
+        other.sessionStartedAt == sessionStartedAt;
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        phase,
+        remainingSeconds,
+        currentCycle,
+        totalCycles,
+        isRunning,
+        isPaused,
+        sessionStartedAt,
+      );
 }

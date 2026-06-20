@@ -6,6 +6,7 @@ import 'package:honey/core/theme/app_spacing.dart';
 import 'package:honey/features/pet/domain/entities/pet_entity.dart';
 import 'package:honey/features/pet/domain/entities/pet_mood_enum.dart';
 import 'package:honey/features/pet/presentation/constants/pet_assets.dart';
+import 'package:honey/features/pet/presentation/widgets/pet_fallback_painter.dart';
 
 class PetDisplayWidget extends StatefulWidget {
   final PetEntity pet;
@@ -81,14 +82,16 @@ class _PetDisplayWidgetState extends State<PetDisplayWidget>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isDark ? AppColors.darkSurface : const Color(0xFFF5EDE0);
-
     return Container(
       width: widget.size + AppSpacing.lg,
-      padding: const EdgeInsets.all(AppSpacing.lg),
+      constraints: const BoxConstraints(minHeight: 200),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: bgColor,
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF3D2E22), Color(0xFF2A1F18)],
+        ),
         borderRadius: BorderRadius.circular(AppRadius.xl),
       ),
       child: Stack(
@@ -130,6 +133,13 @@ class _PetDisplayWidgetState extends State<PetDisplayWidget>
         width: widget.size,
         height: widget.size,
         fit: BoxFit.contain,
+        // Real pet artwork isn't bundled yet (assets/images/pet/ only has a
+        // .gitkeep) — fall back to a hand-drawn puppy so we never show a
+        // broken-image error instead of Mel.
+        errorBuilder: (context, error, stackTrace) => CustomPaint(
+          size: Size(widget.size, widget.size),
+          painter: PetFallbackPainter(mood: widget.pet.computedMood),
+        ),
       )
           .animate(onPlay: (controller) => controller.repeat())
           .moveY(begin: 0, end: -8)
@@ -188,11 +198,11 @@ class _PetDisplayWidgetState extends State<PetDisplayWidget>
         vertical: AppSpacing.sm,
       ),
       decoration: BoxDecoration(
-        color: isDark ? AppColors.darkSurface : Colors.white,
+        color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
         borderRadius: BorderRadius.circular(AppRadius.lg),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withOpacity(isDark ? 0.25 : 0.1),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),

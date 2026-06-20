@@ -19,10 +19,12 @@ class TimerPainter extends CustomPainter {
     final isDark = brightness == Brightness.dark;
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2;
-    const strokeWidth = 8.0;
+    const strokeWidth = 10.0;
 
     // Get colors based on phase and brightness
-    final trackColor = isDark ? AppColors.darkDivider : AppColors.lightDivider;
+    final trackColor =
+        isDark ? AppColors.darkSurfaceVariant : AppColors.lightSurfaceVariant;
+    final accentColor = isDark ? AppColors.darkAccent : AppColors.lightAccent;
     Color progressColor;
 
     switch (phase) {
@@ -49,18 +51,23 @@ class TimerPainter extends CustomPainter {
 
     canvas.drawCircle(center, radius - strokeWidth / 2, trackPaint);
 
-    // Draw progress arc
-    final progressPaint = Paint()
-      ..color = progressColor
-      ..strokeWidth = strokeWidth
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-
+    // Draw progress arc with a primary->accent gradient
     const startAngle = -90 * 3.14159 / 180; // Start from top
     final sweepAngle = progress * 2 * 3.14159; // 360 degrees
+    final arcRect = Rect.fromCircle(center: center, radius: radius - strokeWidth / 2);
+
+    final progressPaint = Paint()
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..shader = SweepGradient(
+        startAngle: startAngle,
+        endAngle: startAngle + sweepAngle.clamp(0.001, 2 * 3.14159),
+        colors: [progressColor, accentColor],
+      ).createShader(arcRect);
 
     canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius - strokeWidth / 2),
+      arcRect,
       startAngle,
       sweepAngle,
       false,

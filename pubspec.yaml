@@ -20,11 +20,11 @@ dependencies:
   go_router: ^13.2.0
   
   # Local Storage
+  hive: ^2.2.3
   hive_flutter: ^1.1.0
-  
+
   # Animation
   flutter_animate: ^4.2.0
-  lottie: ^2.4.0
   
   # Design & Fonts
   google_fonts: ^6.1.0
@@ -43,7 +43,10 @@ dependencies:
   
   # App Usage (for statistics)
   app_usage: ^4.1.0
-  
+
+  # App Blocking (open Android settings / bring app to foreground)
+  android_intent_plus: ^6.0.0
+
   # Utilities
   uuid: ^4.0.0
   intl: ^0.19.0
@@ -69,3 +72,4 @@ flutter:
   assets:
     - assets/images/
     - assets/animations/
+    - assets/audio/

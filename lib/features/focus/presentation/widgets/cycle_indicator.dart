@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/utils/animation_constants.dart';
 
 /// Indicator showing which cycle we're on (1 to 4)
 class CycleIndicator extends StatelessWidget {
@@ -36,8 +37,9 @@ class CycleIndicator extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
             child: AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              width: isCurrent ? 12 : 8,
+              duration: AnimationDurations.fast,
+              curve: AnimationCurves.spring,
+              width: isCurrent ? 24 : 8,
               height: 8,
               decoration: BoxDecoration(
                 color: isCompleted

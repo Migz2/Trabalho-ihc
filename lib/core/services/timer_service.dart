@@ -39,6 +39,29 @@ class TimerService {
   /// Get current timer state
   TimerStateEntity get currentState => _currentState;
 
+  /// Update the configured duration (in minutes) for a phase. If the timer
+  /// is currently idle and showing that phase, the displayed remaining time
+  /// is updated immediately to reflect the new duration.
+  void setPhaseDuration(TimerPhase phase, int minutes) {
+    switch (phase) {
+      case TimerPhase.focus:
+        focusDurationMinutes = minutes;
+        break;
+      case TimerPhase.shortBreak:
+        shortBreakDurationMinutes = minutes;
+        break;
+      case TimerPhase.longBreak:
+        longBreakDurationMinutes = minutes;
+        break;
+    }
+
+    if (_currentState.phase == phase && _currentState.isIdle) {
+      _currentState = _currentState.copyWith(remainingSeconds: minutes * 60);
+      _saveStateToHive();
+      _emitState();
+    }
+  }
+
   /// Initialize timer from Hive storage
   void _loadStateFromHive() {
     try {

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
+import '../../features/statistics/presentation/providers/statistics_provider.dart';
+import '../../features/statistics/presentation/widgets/achievement_unlock_overlay.dart';
 import '../navigation/app_routes.dart';
 
 /// Shell widget with bottom navigation bar for Honey app
-class HomeShell extends StatefulWidget {
+class HomeShell extends ConsumerStatefulWidget {
   final Widget child;
 
   const HomeShell({
@@ -13,16 +16,16 @@ class HomeShell extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<HomeShell> createState() => _HomeShellState();
+  ConsumerState<HomeShell> createState() => _HomeShellState();
 }
 
-class _HomeShellState extends State<HomeShell> {
+class _HomeShellState extends ConsumerState<HomeShell> {
   late int _selectedIndex;
 
   @override
   void initState() {
     super.initState();
-    _selectedIndex = _getSelectedIndex();
+    _selectedIndex = 0;
   }
 
   @override
@@ -70,60 +73,67 @@ class _HomeShellState extends State<HomeShell> {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
 
+    ref.listen(newlyUnlockedAchievementsProvider, (previous, next) async {
+      if (next.isEmpty) return;
+      for (final achievement in next) {
+        if (!context.mounted) return;
+        AchievementUnlockOverlay.show(context, achievement);
+        await Future.delayed(const Duration(milliseconds: 600));
+      }
+      ref.read(newlyUnlockedAchievementsProvider.notifier).state = [];
+    });
+
+    final surfaceColor = isDarkMode ? AppColors.darkSurface : AppColors.lightSurface;
+    final dividerColor = isDarkMode ? AppColors.darkDivider : AppColors.lightDivider;
+    final primaryColor = isDarkMode ? AppColors.darkPrimary : AppColors.lightPrimary;
+    final textSecondary =
+        isDarkMode ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+
     return Scaffold(
       backgroundColor: isDarkMode ? AppColors.darkBackground : AppColors.lightBackground,
       body: widget.child,
-      bottomNavigationBar: Container(
+      bottomNavigationBar: DecoratedBox(
         decoration: BoxDecoration(
-          color: isDarkMode ? AppColors.darkSurface : AppColors.lightSurface,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 8,
-              offset: const Offset(0, -2),
-            ),
-          ],
+          border: Border(top: BorderSide(color: dividerColor, width: 0.5)),
         ),
-        child: BottomNavigationBar(
-          currentIndex: _selectedIndex,
-          onTap: _onNavigationTapped,
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: isDarkMode ? AppColors.darkSurface : AppColors.lightSurface,
-          selectedItemColor: isDarkMode ? AppColors.darkPrimary : AppColors.lightPrimary,
-          unselectedItemColor: isDarkMode ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
-          selectedLabelStyle: Theme.of(context).textTheme.labelSmall,
-          unselectedLabelStyle: Theme.of(context).textTheme.labelSmall,
+        child: NavigationBar(
+          selectedIndex: _selectedIndex,
+          onDestinationSelected: _onNavigationTapped,
+          backgroundColor: surfaceColor,
+          indicatorColor: primaryColor.withOpacity(0.15),
           elevation: 0,
-          items: [
-            _buildNavItem(
+          height: 64,
+          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+          destinations: [
+            _buildDestination(
               icon: Icons.schedule_rounded,
               label: 'Foco',
-              isSelected: _selectedIndex == 0,
-              theme: theme,
+              selectedColor: primaryColor,
+              unselectedColor: textSecondary,
             ),
-            _buildNavItem(
+            _buildDestination(
               icon: Icons.pets_rounded,
               label: 'Pet',
-              isSelected: _selectedIndex == 1,
-              theme: theme,
+              selectedColor: primaryColor,
+              unselectedColor: textSecondary,
             ),
-            _buildNavItem(
+            _buildDestination(
               icon: Icons.shopping_cart_rounded,
               label: 'Loja',
-              isSelected: _selectedIndex == 2,
-              theme: theme,
+              selectedColor: primaryColor,
+              unselectedColor: textSecondary,
             ),
-            _buildNavItem(
+            _buildDestination(
               icon: Icons.history_rounded,
               label: 'Histórico',
-              isSelected: _selectedIndex == 3,
-              theme: theme,
+              selectedColor: primaryColor,
+              unselectedColor: textSecondary,
             ),
-            _buildNavItem(
+            _buildDestination(
               icon: Icons.settings_rounded,
               label: 'Ajustes',
-              isSelected: _selectedIndex == 4,
-              theme: theme,
+              selectedColor: primaryColor,
+              unselectedColor: textSecondary,
             ),
           ],
         ),
@@ -131,17 +141,15 @@ class _HomeShellState extends State<HomeShell> {
     );
   }
 
-  BottomNavigationBarItem _buildNavItem({
+  NavigationDestination _buildDestination({
     required IconData icon,
     required String label,
-    required bool isSelected,
-    required ThemeData theme,
+    required Color selectedColor,
+    required Color unselectedColor,
   }) {
-    return BottomNavigationBarItem(
-      icon: isSelected
-          ? Icon(icon, size: 28)
-          : Icon(icon, size: 24),
-      activeIcon: Icon(icon, size: 28),
+    return NavigationDestination(
+      icon: Icon(icon, size: 24, color: unselectedColor),
+      selectedIcon: Icon(icon, size: 24, color: selectedColor),
       label: label,
     );
   }

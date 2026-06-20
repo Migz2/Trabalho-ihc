@@ -4,7 +4,7 @@ import 'package:honey/features/shop/domain/entities/shop_item_enums.dart';
 
 part 'shop_item_model.g.dart';
 
-@HiveType(typeId: 5)
+@HiveType(typeId: 9)
 class ShopItemModel {
   @HiveField(0)
   final String id;

@@ -7,8 +7,6 @@ import 'package:honey/features/shop/domain/entities/shop_item_entity.dart';
 import 'package:honey/features/shop/domain/repositories/shop_repository.dart';
 
 class ShopRepositoryImpl implements ShopRepository {
-  static const String _tag = 'ShopRepositoryImpl';
-
   @override
   Future<List<ShopItemEntity>> getAllItems() async {
     try {

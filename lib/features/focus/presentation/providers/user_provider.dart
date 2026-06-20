@@ -46,7 +46,51 @@ class UserNotifier extends AsyncNotifier<UserEntity> {
     }
   }
 
+  /// Spend coins from user (clamped at 0)
+  Future<void> spendCoins(int amount) async {
+    final currentUser = state.maybeWhen(
+      data: (user) => user,
+      orElse: () => null,
+    );
+
+    if (currentUser == null) return;
+
+    final updatedUser = currentUser.copyWith(
+      coins: (currentUser.coins - amount).clamp(0, currentUser.coins),
+      lastActiveDate: DateTime.now(),
+    );
+
+    state = AsyncValue.data(updatedUser);
+
+    try {
+      final model = UserModel.fromEntity(updatedUser);
+      await HiveService.saveUser(model);
+    } catch (e) {
+      print('Error saving user: $e');
+    }
+  }
+
   /// Update user streak
+  /// Update display name
+  Future<void> updateName(String newName) async {
+    final currentUser = state.maybeWhen(
+      data: (user) => user,
+      orElse: () => null,
+    );
+
+    if (currentUser == null) return;
+
+    final updatedUser = currentUser.copyWith(name: newName);
+    state = AsyncValue.data(updatedUser);
+
+    try {
+      final model = UserModel.fromEntity(updatedUser);
+      await HiveService.saveUser(model);
+    } catch (e) {
+      print('Error saving user: $e');
+    }
+  }
+
   Future<void> updateStreak(int newStreak) async {
     final currentUser = state.maybeWhen(
       data: (user) => user,

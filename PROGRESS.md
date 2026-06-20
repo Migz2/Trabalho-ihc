@@ -1,10 +1,148 @@
 # Honey App — Progress Report
 
-## Current Status: Phase 3 — Shop System (In Progress)
+## Current Status: ✅ App funcionalmente completo (Foco, Pet, Loja, Estatísticas, Configurações, Onboarding) + sessão de refinamento de UX/UI aplicada
+
+`flutter analyze`: 0 erros. `flutter test`: passando. Ver
+[`FINAL_REPORT.md`](FINAL_REPORT.md) para arquitetura, schema Hive e
+limitações conhecidas em detalhe.
 
 ---
 
-## Phase 3 Deliverables (In Progress)
+## Phase 5 — Sessão de Correções Cirúrgicas de UX/UI (Junho 2026)
+
+Sessão de correções pontuais sobre o app já funcional, a partir de um
+levantamento de problemas em 5 telas (Foco, Pet, Loja, Histórico,
+Configurações). Regra explícita: **sem refatoração de arquitetura**, apenas
+os pontos listados.
+
+### 1. Timer com ajuste inline de duração ✅
+- Botões +/- de 36px ao lado do círculo do timer, visíveis só quando
+  `timer.isIdle` (`AnimatedOpacity` + `IgnorePointer`, 200ms).
+- Ajusta em incrementos de 5 min a fase atual (foco 5–60min, pausa curta
+  1–15min, pausa longa 5–30min).
+- Texto de dica "toque +/− para ajustar" abaixo do "Ciclo X de Y" quando
+  parado.
+- Novo método `TimerService.setPhaseDuration()` / `TimerNotifier.setPhaseDuration()`
+  — atualiza a duração configurada e, se o timer estiver parado naquela
+  fase, recalcula `remainingSeconds` na hora (sem esperar reiniciar).
+
+### 2. Preview real do pet na tela de Foco ✅
+- Novo widget `PetFocusPreview` (`features/focus/presentation/widgets/pet_focus_preview.dart`),
+  conectado de verdade ao `petProvider` (antes era um card estático
+  hardcoded com "Mel está animada!" fixo).
+- Mostra imagem (ou fallback 🐾) do pet, nome, frase motivacional por humor,
+  barra de felicidade e estimativa de moedas do próximo ciclo
+  (`12 * coinMultiplier` da loja). Toque navega para `/pet`.
+
+### 3. Fallback desenhado para imagem do pet ausente ✅
+- Novo `PetFallbackPainter` (`features/pet/presentation/widgets/pet_fallback_painter.dart`):
+  `CustomPainter` que desenha um cachorrinho simples (corpo, cabeça, orelhas,
+  olhos, nariz, boca, rabo) com expressão variando por humor.
+- Usado no `errorBuilder` do `Image.asset` em `PetDisplayWidget` (tela
+  principal do pet) — substituiu o fallback de emoji de uma fase anterior.
+- O preview pequeno na tela de Foco mantém o fallback de emoji 🐾 (mais
+  adequado a 64px).
+
+### 4. Remoção da seção "Lojinha" da tela Pet ✅
+- `pet_page.dart`: removida a seção de prévia da loja (grid de itens,
+  contador X/7, botão "Ver loja completa" e "← Voltar ao foco"). A tela
+  agora termina nos 3 botões de ação (Alimentar/Banho/Carinho), eliminando
+  duplicação com a aba Loja dedicada.
+
+### 5. Banner "Loja em atualização" ✅
+- `shop_page.dart`: banner informativo no topo do catálogo (ícone
+  `Icons.update_rounded`, fundo accent 15%, borda accent 40%) avisando que
+  novos itens chegam em breve — não bloqueia compras dos itens existentes.
+
+### 6. Nome do pet customizável ✅
+- **Onboarding (tela 3):** campo de texto "Como você quer chamar seu pet?"
+  antes do botão "Começar", com valor padrão "Mel", `maxLength: 12`. Ao
+  confirmar, aguarda o pet existir (`petProvider.future`) e chama
+  `renamePet()`.
+- **Configurações:** nova seção "PET" com tile "Nome do pet" → abre diálogo
+  de renomear (`AlertDialog` com `TextField`, `maxLength: 12`).
+- **`PetNotifier.renamePet(String)`** (novo método): `copyWith(name: ...)` +
+  persistência via repositório + atualização de estado. Nome persiste entre
+  reinícios do app.
+
+### 7. Polish visual (Foco, Pet, Loja, Histórico, Configurações) ✅
+- **Foco:** separação clara entre saudação e nome no header; `CoinDisplay`
+  com fundo `surfaceVariant`, padding e sombra refinados (aplicado
+  globalmente no widget compartilhado); arco do timer com gradiente
+  primary→accent (`SweepGradient`) e círculo de profundidade atrás do
+  painter; botões Reset/Skip reduzidos para 48px, Play/Pause com sombra;
+  cards de status (apps bloqueados/notificações) com altura mínima de 72px e
+  ícone em círculo de 32px.
+- **Pet:** card do pet com gradiente de fundo (`#3D2E22→#2A1F18`), altura
+  mínima 200px; barras de atributo de 12px de altura (era 10px); botões de
+  ação com largura responsiva `(largura da tela - 48) / 3`, altura 100px,
+  ícone em container de 52×52 com sombra.
+- **Loja:** mantido `childAspectRatio: 0.72` no grid (em vez do `0.85`
+  pedido) — valor já corrigia um overflow real com nomes longos de item
+  ("Caixinha de música"); todos os 7 itens do catálogo confirmados
+  renderizando.
+- **Histórico:** emoji do estado vazio aumentado para 80px com animação
+  flutuante mais lenta (2s, `Curves.easeInOut`); botão "Ir para o foco"
+  convertido para `OutlinedButton` arredondado.
+- **Configurações:** removido título duplicado (AppBar transparente, só o
+  título no corpo); sliders com trilho de 4px, polegar de raio 10,
+  `overlayShape` de raio 20; divisores fininhos (`height: 1, thickness: 0.5`)
+  entre os itens.
+
+### 8. Bottom navigation refinada ✅
+- `home_shell.dart` migrado de `BottomNavigationBar` (legado) para
+  `NavigationBar` (Material 3): `indicatorColor` primary 15%, altura 64px,
+  borda superior via `DecoratedBox` (em vez de `boxShadow`), labels sempre
+  visíveis, ícones fixos em 24px. Mantidas as 5 abas.
+
+### Extra — atalho de teste
+- Botão de debug "Adicionar 500 moedas (teste)" em Configurações → Conta,
+  para facilitar testar funcionalidades pagas (loja, ações do pet) sem
+  precisar completar dezenas de ciclos de foco manualmente.
+
+### Verificação
+- `flutter analyze`: **0 erros** em todo o projeto (apenas infos de lint
+  pré-existentes, nenhum novo).
+- `flutter test`: todos os testes passando.
+- Todos os itens do critério de aceite da sessão confirmados manualmente no
+  código.
+
+---
+
+## Phase 4 — Estatísticas, Configurações e Onboarding (Complete)
+
+Resumo da fase de polish geral que tornou o app funcionalmente completo
+(detalhes técnicos completos em [`FINAL_REPORT.md`](FINAL_REPORT.md)):
+
+- **Estatísticas reconstruída de fato**: o provider antigo calculava dados e
+  os descartava sem expor um model de UI; a tela era um placeholder
+  estático. Agora `StatisticsNotifier` expõe um `StatisticsEntity` real,
+  com `CalculateStreakUseCase` (streak atual/recorde) e
+  `CheckAchievementsUseCase` estendido (streaks, sessões noturnas/madrugada).
+  A página tem grid de métricas, gráfico semanal (`fl_chart`) e lista de
+  conquistas desbloqueadas/bloqueadas.
+- **Persistência de sessões corrigida**: `timer_provider.dart` agora salva
+  cada `FocusSessionModel` ao completar um ciclo — antes nenhuma sessão era
+  persistida e Estatísticas ficava vazia para sempre.
+- **Configurações completas**: preferências de foco/pausas, tema,
+  som ambiente, bloqueio de apps (UI + persistência; detecção real é
+  limitação conhecida), notificações, perfil com nível/moedas/streak reais.
+- **Onboarding com 3 telas** com ilustrações 100% Flutter (sem assets
+  externos): círculos decorativos (tela 1), moedas subindo (tela 2),
+  avatar com corações (tela 3) + CTA "Começar 🍯" animado.
+- **Loja**: tocar em item já possuído alterna equipar/desequipar (antes só
+  abria o diálogo de compra).
+- **Overlays de celebração**: `CycleCompleteOverlay`, `AchievementUnlockOverlay`,
+  `LevelUpOverlay`, todos ligados a eventos reais do timer/estatísticas.
+- **Auditoria dark-mode** e padronização de animações
+  (`AnimationDurations`/`AnimationCurves`) em todo o app.
+- **Lint**: `analysis_options.yaml` simplificado de ~30 regras
+  obsoletas/inexistentes para `flutter_lints` + extras intencionais — de 886
+  issues para 0 erros/warnings.
+
+---
+
+## Phase 3 Deliverables (Complete)
 
 ### 1. **Shop Domain Layer** ✅
 Complete shop entities with enums for category and rarity.
@@ -576,14 +714,14 @@ Mapped in `pet_assets.dart` via `getAssetForMood(PetMood)`
 - Coin transactions (integrated with UserProvider)
 - Focus reward application (automatic on timer complete)
 
-⚠️ **Phase 3+ scope (NOT implemented):**
-1. Shop feature (items, purchases, inventory)
-2. Equipment system (bonuses from items)
-3. Statistics feature (charts, session history)
-4. Settings feature (user preferences, notifications)
-5. Onboarding flow (user/pet setup)
-6. Pet names customization (currently hardcoded "Mel")
-7. Additional pet visual states
+✅ **Phase 3+ scope — todos implementados nas fases seguintes (ver Phase 4 e 5 acima):**
+1. Shop feature (items, purchases, inventory) — Phase 3
+2. Equipment system (bonuses from items) — Phase 3
+3. Statistics feature (charts, session history) — Phase 4
+4. Settings feature (user preferences, notifications) — Phase 4
+5. Onboarding flow (user/pet setup) — Phase 4
+6. Pet names customization — Phase 5 (onboarding + renomear em Configurações)
+7. Pet visual fallback desenhado em Flutter (`CustomPainter`) — Phase 5
 
 ### Verification Checklist
 
