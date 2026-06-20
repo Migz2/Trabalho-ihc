@@ -225,7 +225,17 @@ class HiveService {
     if (user == null) {
       user = UserModel.defaultUser();
       await saveUser(user);
+      return user;
     }
+
+    // Migration: users created before the 500-coin starting bonus existed
+    // (identifiable by zero coins and zero focus minutes — i.e. they never
+    // had a chance to earn coins yet) get the bonus applied once.
+    if (user.coins == 0 && user.totalFocusMinutes == 0) {
+      user = user.copyWith(coins: 500);
+      await saveUser(user);
+    }
+
     return user;
   }
 

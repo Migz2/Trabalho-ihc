@@ -394,7 +394,7 @@ class _SliderTile extends StatelessWidget {
           SliderTheme(
             data: SliderTheme.of(context).copyWith(
               activeTrackColor: Theme.of(context).colorScheme.primary,
-              inactiveTrackColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+              inactiveTrackColor: Theme.of(context).colorScheme.primaryContainer,
               thumbColor: Theme.of(context).colorScheme.primary,
               overlayColor: Theme.of(context).colorScheme.primary.withOpacity(0.15),
               trackHeight: 4.0,
@@ -449,8 +449,8 @@ class _ToggleTile extends StatelessWidget {
                 HapticFeedback.lightImpact();
                 onChanged(v);
               },
-              activeColor: Theme.of(context).colorScheme.primary,
-              activeTrackColor: Theme.of(context).colorScheme.primary.withOpacity(0.4),
+              activeColor: Theme.of(context).colorScheme.tertiary,
+              activeTrackColor: Theme.of(context).colorScheme.tertiary.withOpacity(0.4),
             )
           ],
         ),

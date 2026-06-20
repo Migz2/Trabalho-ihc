@@ -22,8 +22,7 @@ class TimerPainter extends CustomPainter {
     const strokeWidth = 10.0;
 
     // Get colors based on phase and brightness
-    final trackColor =
-        isDark ? AppColors.darkSurfaceVariant : AppColors.lightSurfaceVariant;
+    final trackColor = isDark ? AppColors.darkDivider : AppColors.lightDivider;
     final accentColor = isDark ? AppColors.darkAccent : AppColors.lightAccent;
     Color progressColor;
 

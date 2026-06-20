@@ -15,6 +15,7 @@ import '../../../settings/presentation/providers/settings_provider.dart';
 import '../../../settings/presentation/pages/app_blocking_page.dart';
 import '../widgets/cycle_complete_overlay.dart';
 import '../widgets/pet_focus_preview.dart';
+import '../widgets/stop_session_dialog.dart';
 import '../../../pet/presentation/widgets/level_up_overlay.dart';
 
 class FocusPage extends ConsumerStatefulWidget {
@@ -38,6 +39,27 @@ class _FocusPageState extends ConsumerState<FocusPage>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  /// If a session is running/paused, asks for confirmation before resetting
+  /// it. Returns true if the timer was (or already was idle and is now)
+  /// safely reset/clear to proceed with whatever the caller wanted to do.
+  Future<bool> _confirmAndReset(TimerStateEntity timer) async {
+    if (timer.isIdle) {
+      ref.read(timerProvider.notifier).reset();
+      return true;
+    }
+
+    final confirmed = await showStopConfirmationDialog(
+      context,
+      remainingSeconds: timer.remainingSeconds,
+      currentCycle: timer.currentCycle,
+      totalCycles: timer.totalCycles,
+    );
+    if (confirmed) {
+      ref.read(timerProvider.notifier).reset();
+    }
+    return confirmed;
   }
 
   @override
@@ -181,7 +203,16 @@ class _FocusPageState extends ConsumerState<FocusPage>
     final blockedAppsCount = settings?.blockedAppPackages.length ?? 0;
     final notificationsSilenced = settings?.silenceNotifications ?? true;
 
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        final timer = timerState.value;
+        if (timer != null && (timer.isRunning || timer.isPaused)) {
+          await _confirmAndReset(timer);
+        }
+      },
+      child: Scaffold(
       backgroundColor: bgColor,
       body: timerState.when(
         data: (timer) {
@@ -451,9 +482,7 @@ class _FocusPageState extends ConsumerState<FocusPage>
                             Icons.refresh_rounded,
                             color: textPrimary,
                           ),
-                          onPressed: () {
-                            timerNotifier.reset();
-                          },
+                          onPressed: () => _confirmAndReset(timer),
                         ),
                       ),
                       const SizedBox(width: AppSpacing.lg),
@@ -678,6 +707,7 @@ class _FocusPageState extends ConsumerState<FocusPage>
         error: (error, stack) => Center(
           child: Text('Erro: $error'),
         ),
+      ),
       ),
     );
   }

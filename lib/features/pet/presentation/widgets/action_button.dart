@@ -93,7 +93,7 @@ class _ActionButtonState extends State<ActionButton>
           curve: AnimationCurves.standard,
           child: Container(
             width: width,
-            height: 100,
+            constraints: const BoxConstraints(minHeight: 100),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: surfaceColor,

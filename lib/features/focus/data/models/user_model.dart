@@ -76,7 +76,7 @@ class UserModel extends HiveObject {
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       name: 'Marina',
       level: 1,
-      coins: 0,
+      coins: 500,
       streak: 0,
       totalFocusMinutes: 0,
       createdAt: now,

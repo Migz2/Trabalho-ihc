@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
+import '../../features/focus/presentation/providers/timer_provider.dart';
+import '../../features/focus/presentation/widgets/stop_session_dialog.dart';
 import '../../features/statistics/presentation/providers/statistics_provider.dart';
 import '../../features/statistics/presentation/widgets/achievement_unlock_overlay.dart';
 import '../navigation/app_routes.dart';
@@ -44,7 +46,23 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     return 0;
   }
 
-  void _onNavigationTapped(int index) {
+  Future<void> _onNavigationTapped(int index) async {
+    if (index == _selectedIndex) return;
+
+    final timer = ref.read(timerProvider).value;
+    if (timer != null && (timer.isRunning || timer.isPaused)) {
+      final confirmed = await showStopConfirmationDialog(
+        context,
+        remainingSeconds: timer.remainingSeconds,
+        currentCycle: timer.currentCycle,
+        totalCycles: timer.totalCycles,
+      );
+      if (!confirmed) return;
+      ref.read(timerProvider.notifier).reset();
+    }
+
+    if (!mounted) return;
+
     setState(() {
       _selectedIndex = index;
     });
@@ -85,7 +103,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
 
     final surfaceColor = isDarkMode ? AppColors.darkSurface : AppColors.lightSurface;
     final dividerColor = isDarkMode ? AppColors.darkDivider : AppColors.lightDivider;
-    final primaryColor = isDarkMode ? AppColors.darkPrimary : AppColors.lightPrimary;
+    final accentColor = isDarkMode ? AppColors.darkAccent : AppColors.lightAccent;
     final textSecondary =
         isDarkMode ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
 
@@ -100,7 +118,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
           selectedIndex: _selectedIndex,
           onDestinationSelected: _onNavigationTapped,
           backgroundColor: surfaceColor,
-          indicatorColor: primaryColor.withOpacity(0.15),
+          indicatorColor: accentColor.withOpacity(0.15),
           elevation: 0,
           height: 64,
           labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
@@ -108,31 +126,31 @@ class _HomeShellState extends ConsumerState<HomeShell> {
             _buildDestination(
               icon: Icons.schedule_rounded,
               label: 'Foco',
-              selectedColor: primaryColor,
+              selectedColor: accentColor,
               unselectedColor: textSecondary,
             ),
             _buildDestination(
               icon: Icons.pets_rounded,
               label: 'Pet',
-              selectedColor: primaryColor,
+              selectedColor: accentColor,
               unselectedColor: textSecondary,
             ),
             _buildDestination(
               icon: Icons.shopping_cart_rounded,
               label: 'Loja',
-              selectedColor: primaryColor,
+              selectedColor: accentColor,
               unselectedColor: textSecondary,
             ),
             _buildDestination(
               icon: Icons.history_rounded,
               label: 'Histórico',
-              selectedColor: primaryColor,
+              selectedColor: accentColor,
               unselectedColor: textSecondary,
             ),
             _buildDestination(
               icon: Icons.settings_rounded,
               label: 'Ajustes',
-              selectedColor: primaryColor,
+              selectedColor: accentColor,
               unselectedColor: textSecondary,
             ),
           ],
