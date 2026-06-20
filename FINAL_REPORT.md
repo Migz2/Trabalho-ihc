@@ -138,12 +138,13 @@ salvos no dispositivo do usuário.
   com `flutter_launcher_icons` a partir de uma arte real do Honey.
 - [ ] **Splash screen**: configurar `flutter_native_splash` (ou
   `android:windowSplashScreen` no Android 12+) com a identidade visual.
-- [ ] **Assets do pet**: `pet_assets.dart` referencia
-  `assets/images/pet/mel_happy.png` etc., mas a pasta só tem um `.gitkeep` —
-  essas imagens nunca foram entregues. `PetDisplayWidget` e o onboarding
-  (tela 3) hoje usam emoji/formas como substituto. Assim que a arte
-  existir, basta trocar `Text('🐻')` pelos `Image.asset(...)` já referenciados
-  em `pet_assets.dart`.
+- [x] **Assets do pet**: `mel_normal.png`, `mel_happy.png` e
+  `mel_sleeping.png` foram entregues e estão em `assets/images/pet/`,
+  referenciados por `pet_assets.dart`. **Atenção**: declarar apenas
+  `assets/images/` no `pubspec.yaml` NÃO inclui subpastas — é preciso listar
+  `assets/images/pet/` explicitamente (já corrigido). Confirmado via
+  inspeção do `.apk` gerado (`unzip -l` mostra os 3 PNGs em
+  `assets/flutter_assets/assets/images/pet/`).
 - [ ] **Build assinada**: configurar `key.properties` +
   `signingConfigs` em `android/app/build.gradle.kts` para release.
 - [ ] **Detecção real de app em primeiro plano** para o bloqueio de apps
@@ -160,14 +161,12 @@ salvos no dispositivo do usuário.
   mas não está conectado a esse fluxo) ou `device_apps` para listar apps
   instalados.
 - **`applicationId` de exemplo** (`com.example.honey_app`) — ver seção 4.
-- **Sem assets reais do pet** — ver seção 4. Desde a sessão de refinamento de
-  UX/UI, o `errorBuilder` do `Image.asset` em `PetDisplayWidget` usa um
-  `PetFallbackPainter` (`CustomPainter` que desenha um cachorrinho simples,
-  variando expressão por humor) em vez de mostrar um ícone de imagem
-  quebrada; o preview pequeno na tela de Foco usa um fallback de emoji 🐾.
-  Quando a arte real existir, basta os `Image.asset(...)` em
-  `pet_assets.dart` resolverem normalmente e os fallbacks nunca mais serão
-  acionados — nenhuma mudança de código extra é necessária.
+- **Assets reais do pet entregues** (ver seção 4) — o `errorBuilder` do
+  `Image.asset` em `PetDisplayWidget` mantém um `PetFallbackPainter`
+  (`CustomPainter` que desenha um cachorrinho simples) como rede de
+  segurança caso um arquivo de imagem específico falhe ao carregar; o
+  preview pequeno na tela de Foco mantém o fallback de emoji 🐾 pelo mesmo
+  motivo. Nenhum dos dois deveria mais ser acionado em uso normal.
 - **Sincronização parcial entre timer e Configurações**: os novos botões
   +/- na tela de Foco (`TimerService.setPhaseDuration()`) atualizam a
   duração da fase atual **e** o `remainingSeconds` exibido imediatamente,

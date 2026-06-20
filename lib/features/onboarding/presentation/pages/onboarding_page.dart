@@ -500,9 +500,6 @@ class _OnboardingScreen3 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Note: real pet artwork (mel_happy.png) isn't bundled as an asset yet
-    // (assets/images/pet/ only has a .gitkeep) — fall back to a drawn
-    // illustration so we never render a broken-image icon.
     return Scaffold(
       backgroundColor: bgColor,
       resizeToAvoidBottomInset: true,

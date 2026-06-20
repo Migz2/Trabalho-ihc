@@ -133,9 +133,8 @@ class _PetDisplayWidgetState extends State<PetDisplayWidget>
         width: widget.size,
         height: widget.size,
         fit: BoxFit.contain,
-        // Real pet artwork isn't bundled yet (assets/images/pet/ only has a
-        // .gitkeep) — fall back to a hand-drawn puppy so we never show a
-        // broken-image error instead of Mel.
+        // Fall back to a hand-drawn puppy if the asset is ever missing, so
+        // we never show a broken-image error instead of Mel.
         errorBuilder: (context, error, stackTrace) => CustomPaint(
           size: Size(widget.size, widget.size),
           painter: PetFallbackPainter(mood: widget.pet.computedMood),

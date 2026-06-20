@@ -8,6 +8,92 @@ limitações conhecidas em detalhe.
 
 ---
 
+## Phase 6 — Assets reais do pet, paleta final e fluxos de proteção (Junho 2026)
+
+Segunda rodada de correções pontuais sobre o app, com 6 alterações
+numeradas, recebida na mesma sessão de refinamento de UX/UI.
+
+### 1. Assets reais do pet ✅
+- `mel_normal.png`, `mel_happy.png` e `mel_sleeping.png` entregues e
+  adicionados em `assets/images/pet/`.
+- `PetAssets.getAssetForMood()` remapeado: ecstatic/happy → `mel_happy`,
+  content/neutral → `mel_normal`, sad/neglected → `mel_sleeping`.
+- **Bug real encontrado e corrigido**: declarar só `assets/images/` no
+  `pubspec.yaml` não inclui subpastas — o Flutter só pega arquivos
+  diretamente dentro da pasta listada. As imagens existiam em disco e o
+  app compilava sem erro, mas nunca eram embarcadas no bundle (confirmado
+  inspecionando o `.apk` gerado com `unzip -l`, que só mostrava o
+  `.gitkeep`). Corrigido adicionando `assets/images/pet/` como entrada
+  própria no `pubspec.yaml`. Reproduzido e confirmado corrigido via
+  `flutter build apk --debug` + inspeção do conteúdo do APK.
+
+### 2. Paleta de cores alinhada à referência visual ✅
+- `app_colors.dart`: `lightBackground` (`#FAF7F2→#FAF6EF`),
+  `lightSurfaceVariant` (`#F5F0E8→#F2EBE0`), `darkPrimaryLight`
+  (`#E8C99A→#8B5E3C`), `darkTextHint` (`#6B5344→#7A6355`), `darkDivider`
+  (`#4A3A2F→#3D2E22`). Adicionado `AppColors.cardShadow`.
+- Auditoria de uso de cor em todo o app: track do timer voltou a usar
+  `divider` (tinha ido para `surfaceVariant` numa correção anterior do
+  mesmo dia — revertido a pedido); switches ativos e ícone/indicador
+  selecionado da bottom nav passaram de `primary` para `accent`; trilho
+  inativo dos sliders passou de `primary@20%` para `primaryContainer`
+  (= `primaryLight`); `CardThemeData` ganhou `elevation: 2` +
+  `shadowColor` no tema claro para refletir `cardShadow` globalmente sem
+  precisar tocar cada `Card` individualmente.
+
+### 3. Viewport mobile simulado no desktop ✅
+- `main.dart`: orientação portrait nos dois sentidos + status/nav bar
+  transparentes definidos já no boot (antes do primeiro frame).
+- `app.dart`: `MaterialApp.router.builder` agora centraliza a UI numa
+  caixa de 390px de largura quando a janela é mais larga que 480px,
+  **sobrescrevendo o `MediaQuery` do subtree** (não só recortando
+  visualmente) — necessário para que widgets com lógica responsiva
+  baseada em `MediaQuery.size.width` (ex: largura dos botões de ação do
+  Pet) calculem com base nos 390px simulados, não na largura real da
+  janela.
+
+### 4. 500 moedas iniciais ✅
+- `UserModel.defaultUser()` cria novos usuários com `coins: 500` (era 0).
+- Migração em `HiveService.getUserOrCreate()`: usuários já existentes com
+  `coins == 0 && totalFocusMinutes == 0` (nunca tiveram chance de ganhar
+  moeda) recebem o bônus uma única vez automaticamente.
+
+### 5. Loja com overlay "em breve" cobrindo a tela ✅
+- Banner inline da correção anterior substituído por um overlay
+  full-screen (`_ComingSoonOverlay` em `shop_page.dart`): scrim escuro,
+  card central com ícone, emoji, texto e barra de progresso animada
+  (0%→75% em 2s), botão de fechar que navega para `/focus`. O catálogo
+  continua renderizado atrás, mas inacessível (capturado pelo overlay).
+
+### 6. Confirmação ao interromper sessão ativa ✅
+- Novo `stop_session_dialog.dart` (`showStopConfirmationDialog`,
+  reutilizável): mensagem dinâmica conforme tempo restante, botões
+  "Continuar sessão" / "Abandonar sessão".
+- Conectado em 3 pontos: botão de reset na tela de Foco
+  (`_confirmAndReset`), `PopScope` (botão voltar do Android/gesture, com
+  `canPop: false`) e troca de aba na bottom nav (`home_shell.dart`,
+  intercepta antes de navegar).
+
+### Bug de overflow encontrado durante a verificação ✅
+- Ao rodar o app de fato (smoke test `flutter run -d linux`), os botões de
+  ação da tela Pet (Alimentar/Banho/Carinho) deram overflow vertical: a
+  `height: 100` fixa definida numa correção anterior não cabia com ícone
+  de 52px + padding 16 + label + custo. Trocado para
+  `constraints: BoxConstraints(minHeight: 100)` — nunca mais quebra,
+  mesmo se a fonte do sistema for maior.
+
+### Verificação
+- `flutter analyze`: 0 erros. `flutter test`: passando.
+- `flutter build apk --debug`: build limpo, 3 imagens do pet confirmadas
+  dentro do `.apk` via `unzip -l`.
+- Build desktop Linux ficou temporariamente bloqueada por um conflito de
+  toolchain do sistema (snap do Flutter vs. glibc do host, exposto por um
+  `flutter clean` durante a investigação do bug de assets) — não
+  relacionado ao código do app; resolução pendente de `sudo snap refresh
+  flutter` por fora desta sessão.
+
+---
+
 ## Phase 5 — Sessão de Correções Cirúrgicas de UX/UI (Junho 2026)
 
 Sessão de correções pontuais sobre o app já funcional, a partir de um

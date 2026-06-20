@@ -295,9 +295,11 @@ e quando), veja [`PROGRESS.md`](PROGRESS.md).
   salva preferências, mas não bloqueia de fato.
 - **`applicationId` de exemplo** (`com.example.honey_app`) — trocar antes de
   publicar.
-- **Sem arte real do pet** — `assets/images/pet/` só tem `.gitkeep`; o app
-  usa um fallback desenhado em Flutter (`CustomPainter`) e emojis enquanto a
-  arte definitiva não é entregue.
+- **Importante ao adicionar assets em subpastas**: declarar `assets/images/`
+  no `pubspec.yaml` não inclui subpastas automaticamente — cada subpasta
+  (ex: `assets/images/pet/`) precisa ser listada explicitamente, ou os
+  arquivos não entram no bundle (mesmo existindo em disco e compilando sem
+  erro). Já corrigido para a pasta do pet.
 - **Sincronização parcial de duração do timer**: ajustar a duração pelos
   botões +/- da tela de Foco atualiza o timer imediatamente; ajustar pelos
   sliders de Configurações só é refletido na próxima vez que o timer for
