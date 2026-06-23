@@ -146,10 +146,12 @@ class SettingsPage extends ConsumerWidget {
                           value: settings.appBlockingEnabled,
                           onChanged: (v) async {
                             if (v) {
-                              final granted = await ref.read(appBlockingServiceProvider).requestUsageStatsPermission();
+                              final blockingService = ref.read(appBlockingServiceProvider);
+                              final granted = await blockingService.hasUsageStatsPermission();
                               if (!granted) {
+                                await blockingService.requestUsageStatsPermission();
                                 if (!context.mounted) return;
-                                unawaited(showDialog(context: context, builder: (_) => AlertDialog(title: const Text('Permissão necessária'), content: const Text('Permissão de acesso às estatísticas de uso é necessária para monitorar apps.'), actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK'))])));
+                                unawaited(showDialog(context: context, builder: (dialogContext) => AlertDialog(title: const Text('Permissão necessária'), content: const Text('Permissão de acesso às estatísticas de uso é necessária para monitorar apps.'), actions: [TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('OK'))])));
                                 return;
                               }
                             }
