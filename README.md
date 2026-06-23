@@ -1,4 +1,4 @@
-# 🍯 Honey — App de Produtividade com Timer Pomodoro & Pet Virtual
+# Honey — App de Produtividade com Timer Pomodoro & Pet Virtual
 
 Um app Flutter que estimula a produtividade através de sessões de foco
 (técnica Pomodoro) enquanto o usuário cuida de um pet virtual — quanto mais
@@ -9,32 +9,32 @@ Projeto desenvolvido para a disciplina de **IHC (Interação Humano-Computador)*
 ## 📋 Sobre
 
 Honey combina a técnica **Pomodoro** com um sistema de **pet virtual**. O
-usuário ganha moedas (🍯) completando ciclos de foco, e usa essas moedas para
+usuário ganha moedas completando ciclos de foco, e usa essas moedas para
 alimentar, cuidar e equipar acessórios no seu pet através de uma loja
 integrada.
 
 ### Funcionalidades
 
-- ⏱️ **Timer Pomodoro** com duração de foco/pausas customizável, incluindo
+-  **Timer Pomodoro** com duração de foco/pausas customizável, incluindo
   ajuste rápido (+/- 5 min) direto na tela de Foco enquanto o timer está parado
-- 🐾 **Pet virtual** com fome, higiene, felicidade e energia, nome
+-  **Pet virtual** com fome, higiene, felicidade e energia, nome
   personalizável (no onboarding ou depois em Configurações), e fallback
   desenhado 100% em Flutter caso a arte do pet não esteja disponível
-- 🏪 **Loja** com 7 itens (acessórios, brinquedos, fundos) que dão bônus de
+-  **Loja** com 7 itens (acessórios, brinquedos, fundos) que dão bônus de
   felicidade/moedas/redução de decaimento ao serem equipados
-- 📊 **Estatísticas** com streak atual/recorde, horas totais focadas, gráfico
+-  **Estatísticas** com streak atual/recorde, horas totais focadas, gráfico
   semanal e conquistas desbloqueáveis
-- ⚙️ **Configurações** completas: duração de foco/pausas, tema claro/escuro,
+-  **Configurações** completas: duração de foco/pausas, tema claro/escuro,
   som ambiente, bloqueio de apps (parcial — ver limitações), notificações,
   perfil e renomear o pet
-- 🌓 **Modo escuro** com paleta quente baseada em tons de mel
-- 🔔 **Notificações locais** para lembretes de sessão
-- 🎉 Overlays de celebração ao completar ciclos, subir de nível e desbloquear
+-  **Modo escuro** com paleta quente baseada em tons de mel
+-  **Notificações locais** para lembretes de sessão
+-  Overlays de celebração ao completar ciclos, subir de nível e desbloquear
   conquistas
 
 ---
 
-## 🛠 Stack Tecnológica
+##  Stack Tecnológica
 
 ### Framework & Linguagem
 - **Flutter** 3.16+ com Null Safety
@@ -62,7 +62,7 @@ integrada.
 
 ---
 
-## 📦 Como executar
+##  Como executar
 
 ### Pré-requisitos
 - [Flutter SDK](https://docs.flutter.dev/get-started/install) 3.16 ou mais recente
@@ -206,7 +206,7 @@ flutter clean && flutter pub get
 
 ---
 
-## 📁 Estrutura do Projeto
+##  Estrutura do Projeto
 
 ```
 lib/
@@ -243,7 +243,7 @@ Hive e fluxo de dados completo estão em [`FINAL_REPORT.md`](FINAL_REPORT.md).
 
 ---
 
-## 🎨 Design System
+##  Design System
 
 ### Paleta de cores
 - **Primária:** `#C17F3E` (dourado mel) / `#D4924E` (modo escuro)
@@ -270,15 +270,15 @@ Hive e fluxo de dados completo estão em [`FINAL_REPORT.md`](FINAL_REPORT.md).
 3. Se sim → `/focus` (aba padrão).
 
 **Bottom navigation (5 abas):**
-- 🎯 **Foco** (`/focus`) — timer Pomodoro + preview do pet
-- 🐾 **Pet** (`/pet`) — tela completa do pet (atributos, ações)
-- 🛍️ **Loja** (`/shop`) — catálogo de itens
-- 📊 **Histórico** (`/history`) — estatísticas e conquistas
-- ⚙️ **Ajustes** (`/settings`) — preferências e perfil
+-  **Foco** (`/focus`) — timer Pomodoro + preview do pet
+-  **Pet** (`/pet`) — tela completa do pet (atributos, ações)
+-  **Loja** (`/shop`) — catálogo de itens
+-  **Histórico** (`/history`) — estatísticas e conquistas
+-  **Ajustes** (`/settings`) — preferências e perfil
 
 ---
 
-## ✅ Status atual
+##  Status atual
 
 O app está **funcionalmente completo**: todas as features descritas acima
 estão implementadas e integradas (timer, pet, loja, estatísticas,
@@ -309,7 +309,7 @@ Lista completa e mais detalhada em [`FINAL_REPORT.md`](FINAL_REPORT.md).
 
 ---
 
-## 📱 Requisitos de Dispositivo
+##  Requisitos de Dispositivo
 
 - **Android 5.0+** (API 21)
 - **iOS 11.0+**
@@ -319,7 +319,7 @@ Lista completa e mais detalhada em [`FINAL_REPORT.md`](FINAL_REPORT.md).
 
 ---
 
-## 🧪 Testes
+##  Testes
 
 ```bash
 flutter test
@@ -327,15 +327,17 @@ flutter test
 
 ---
 
-## 📄 Licença
+##  Licença
 
 MIT License — veja o arquivo LICENSE.
 
-## 👥 Contribuidores
+##  Contribuidores
 
-- **Miguel** — Desenvolvedor (Projeto IHC)
+- **Ana Caroline Fachini** — Desenvolvedor (Projeto IHC)
+- **Miguel De almeida Silva** — Desenvolvedor (Projeto IHC)
+- **Stéffany Fabris Boebel** — Desenvolvedor (Projeto IHC)
 
-## 📞 Suporte
+##  Suporte
 
 Para problemas ou sugestões, abra uma issue no GitHub.
 
