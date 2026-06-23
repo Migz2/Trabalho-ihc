@@ -6,7 +6,7 @@ ciclos de foco completados, mais feliz e desenvolvido o pet fica.
 
 Projeto desenvolvido para a disciplina de **IHC (Interação Humano-Computador)**.
 
-## 📋 Sobre
+## Sobre
 
 Honey combina a técnica **Pomodoro** com um sistema de **pet virtual**. O
 usuário ganha moedas completando ciclos de foco, e usa essas moedas para
@@ -343,5 +343,4 @@ Para problemas ou sugestões, abra uma issue no GitHub.
 
 ---
 
-**Feito com 🍯 por Miguel**
-*Última atualização: 20 de junho de 2026*
+
